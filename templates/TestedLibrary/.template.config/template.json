@@ -33,7 +33,7 @@
     {
       "modifiers": [
         {
-          "exclude": [ "**/.vs/**", ".template_config/**", ".git/**", ".NCrunch_*/**", "*.ncrunch", "template.cake" ]
+          "exclude": [ "**/.vs/**", ".template_config/**", ".git/**", "._NCrunch_*/**", "*.ncrunch", "template.cake" ]
         }
       ]
     }
