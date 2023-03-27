@@ -9,7 +9,7 @@ var configuration = Argument("configuration", "Release");
 Task("__TestTemplate")
 	.Does(() => {
 
-		var installResult = StartProcess("dotnet", @"new install .\ --force");
+		var installResult = StartProcess("dotnet", @"new install .\templates\TestedLibrary --force");
 		if (installResult != 0)
 			throw new ApplicationException($"Failed installation ({installResult})");
 
@@ -23,11 +23,16 @@ Task("__TestTemplate")
 		DotNetTest(@".\bin\template-proj\CakeTest.sln");
 	});
 
-Task("__PackageTemplate")
-		.IsDependentOn("__TestTemplate")
-		.Does(() => {
-			// TODO: Package and release template
-		});
+Task("PackageTemplate")
+	.IsDependentOn("__TestTemplate")
+	.Does(() => {
+		// TODO: Figure out how to inject version number in here (then use git version)
+		var result = StartProcess("dotnet", "pack");
+		if (result != 0)
+			throw new ApplicationException($"Failed pack ({result})");
+
+		// TODO: Push to package feed
+	});
 
 Task("Default")
     .IsDependentOn("__TestTemplate");
