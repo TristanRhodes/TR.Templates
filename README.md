@@ -14,3 +14,7 @@ https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
 ### To Test Template Generation
 From root:
 `dotnet cake template.cake`
+
+### To Generate a template
+Run:
+`dotnet new tr/tested-library --output .\bin\template-proj --ProjectName {ProjectName}`
