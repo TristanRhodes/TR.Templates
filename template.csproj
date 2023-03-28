@@ -5,6 +5,7 @@
     <PackageVersion>1.0</PackageVersion>
     <PackageId>TestTemplate</PackageId>
     <Title>TestTemplate</Title>
+    <RepositoryUrl>https://github.com/TristanRhodes/TestedLibraryTemplate</RepositoryUrl>
     <Authors>Me</Authors>
     <Description>Templates to use when creating an application.</Description>
     <PackageTags>dotnet-new;templates</PackageTags>
