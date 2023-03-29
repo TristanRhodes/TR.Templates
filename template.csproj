@@ -10,7 +10,6 @@
     <Description>Templates to use when creating an application.</Description>
     <PackageTags>dotnet-new;templates</PackageTags>
     <TargetFramework>net6.0</TargetFramework>
-
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>

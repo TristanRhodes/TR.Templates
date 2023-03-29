@@ -1,4 +1,14 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
+// ADDINS
+///////////////////////////////////////////////////////////////////////////////
+#addin nuget:?package=Cake.Json&version=7.0.1
+
+///////////////////////////////////////////////////////////////////////////////
+// TOOLS
+///////////////////////////////////////////////////////////////////////////////
+#tool "dotnet:?package=GitVersion.Tool"
+
+///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -26,28 +36,40 @@ Task("__TestTemplate")
 Task("PackageTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
-		// TODO: Figure out how to inject version number in here (then use git version)
 
-		 var packSettings = new DotNetPackSettings
-		 {
-			 Configuration = "Release",
-			 OutputDirectory = "./artifacts/"
-		 };
+		var version = GitVersion();
+		Information(SerializeJsonPretty(version));
 
-		DotNetPack("template.csproj", packSettings);
-
-		var versionNumber = "1.0.0";
+		var versionNumber = version.SemVer;
 		var packageName = $"TestTemplate.{versionNumber}.nupkg";
 		var source = "https://nuget.pkg.github.com/TristanRhodes/index.json";
 		var key = "{KEY}";
 
-		var settings = new DotNetNuGetPushSettings
+		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
+		Information("Packing...");
+		var settings = new DotNetMSBuildSettings
+		{
+			PackageVersion = versionNumber
+		};
+
+		var packSettings = new DotNetPackSettings
+		{
+			Configuration = "Release",
+			OutputDirectory = "./artifacts/",
+			MSBuildSettings = settings
+		};
+		DotNetPack("template.csproj", packSettings);
+
+
+		https://gitversion.net/docs/usage/cli/installation
+
+		Information("Pushing...");
+		var pushSettings = new DotNetNuGetPushSettings
 		{
 			Source = source,
 			ApiKey = key
 		};
-
-		DotNetNuGetPush($"artifacts/{packageName}", settings);
+		DotNetNuGetPush($"artifacts/{packageName}", pushSettings);
 	});
 
 Task("Default")
