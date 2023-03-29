@@ -27,11 +27,27 @@ Task("PackageTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
 		// TODO: Figure out how to inject version number in here (then use git version)
-		var result = StartProcess("dotnet", "pack");
-		if (result != 0)
-			throw new ApplicationException($"Failed pack ({result})");
 
-		// TODO: Push to package feed
+		 var packSettings = new DotNetPackSettings
+		 {
+			 Configuration = "Release",
+			 OutputDirectory = "./artifacts/"
+		 };
+
+		DotNetPack("template.csproj", packSettings);
+
+		var versionNumber = "1.0.0";
+		var packageName = $"TestTemplate.{versionNumber}.nupkg";
+		var source = "https://nuget.pkg.github.com/TristanRhodes/index.json";
+		var key = "{KEY}";
+
+		var settings = new DotNetNuGetPushSettings
+		{
+			Source = source,
+			ApiKey = key
+		};
+
+		DotNetNuGetPush($"artifacts/{packageName}", settings);
 	});
 
 Task("Default")

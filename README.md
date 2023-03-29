@@ -30,6 +30,8 @@ See `NuGet` tab: https://github.com/features/packages
 
 See section tab: https://docs.github.com/en/packages/quickstart
 
+dotnet cake template.cake --Target=PackageTemplate
+
 #### This works...
 dotnet nuget add source https://nuget.pkg.github.com/TristanRhodes/index.json -n GithubRoot
 dotnet nuget push TestTemplate.1.0.0.nupkg -s GithubRoot -k {key}
