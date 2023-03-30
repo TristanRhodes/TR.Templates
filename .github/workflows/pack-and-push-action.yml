@@ -16,13 +16,9 @@ jobs:
         run: |
           ls ${{ github.workspace }}
 
-      - name: Print token (To remove)
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }}
-
       - name: Run cake step
         uses: cake-build/cake-action@v1
         with:
           script-path: template.cake
           target: PackAndPushTemplate
-          ApiKey: ${{ secrets.GITHUB_TOKEN }}
+          ApiKey: ${{ secrets.GITHUBAPIKEY }}
