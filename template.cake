@@ -14,6 +14,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var apiKey = Argument("ApiKey", "KEY");
 
 
 Task("__TestTemplate")
@@ -49,7 +50,6 @@ Task("PackAndPushTemplate")
 		var versionNumber = version.SemVer;
 		var packageName = $"TestTemplate.{versionNumber}.nupkg";
 		var source = "https://nuget.pkg.github.com/TristanRhodes/index.json";
-		var key = "{KEY}";
 
 		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 		Information("Packing...");
@@ -73,7 +73,7 @@ Task("PackAndPushTemplate")
 		var pushSettings = new DotNetNuGetPushSettings
 		{
 			Source = source,
-			ApiKey = key
+			ApiKey = apiKey
 		};
 		DotNetNuGetPush($"artifacts/{packageName}", pushSettings);
 	});

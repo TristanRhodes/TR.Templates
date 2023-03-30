@@ -21,3 +21,4 @@ jobs:
         with:
           script-path: template.cake
           target: PackAndPushTemplate
+          ApiKey: ${{ secrets.GITHUB_TOKEN }}
