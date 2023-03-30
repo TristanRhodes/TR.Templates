@@ -17,7 +17,7 @@ var configuration = Argument("configuration", "Release");
 var apiKey = Argument<string>("ApiKey", null) ?? EnvironmentVariable<string>("INPUT_APIKEY", "");
 
 
-Task("__TestTemplate")
+Task("InstallAndTestTemplate")
 	.Does(() => {
 		
 		Information("Installing Template...");
@@ -39,7 +39,7 @@ Task("__TestTemplate")
 	});
 
 Task("PackAndPushTemplate")
-	.IsDependentOn("__TestTemplate")
+	.IsDependentOn("InstallAndTestTemplate")
 	.Does(() => {
 
 		Information("Loading git version...");
