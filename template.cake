@@ -40,8 +40,8 @@ Task("PackAndPushTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
 		
-		Information("Installing tool...");
-		var installResult = StartProcess("dotnet", @"tool install --global GitVersion.Tool");
+		Information("Running Gitversion...");
+		var installResult = StartProcess("dotnet-gitversion");
 		if (installResult != 0)
 			throw new ApplicationException($"Failed to install gitversion ({installResult})");
 
