@@ -40,13 +40,21 @@ Task("PackAndPushTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
 		
-		Information("Running Gitversion...");
-		var installResult = StartProcess("dotnet-gitversion");
-		if (installResult != 0)
-			throw new ApplicationException($"Failed to install gitversion ({installResult})");
+		// Will just set the version number of the build in the build server to the FullSemVer.
+		GitVersion(new GitVersionSettings
+		{
+			OutputType = GitVersionOutput.BuildServer
+		});
+
+		// Will just return the version number variables as JSON, which will be parsed by the Cake alias and then returned.
+		var version = GitVersion(new GitVersionSettings
+		{
+			OutputType = GitVersionOutput.Json
+		});
+		Information(SerializeJsonPretty(version));
 
 		Information("Loading git version...");
-		var version = GitVersion();
+		version = GitVersion();
 		Information("Writing..");
 		Information(SerializeJsonPretty(version));
 
