@@ -5,7 +5,7 @@ run-name: Pack and push project templates
 on:
   push:
     branches:    
-      - main
+      - master
 
 jobs:
   Pack-And-Push-Template:
