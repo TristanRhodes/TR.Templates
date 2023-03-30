@@ -33,7 +33,7 @@ Task("__TestTemplate")
 		DotNetTest(@".\bin\template-proj\CakeTest.sln");
 	});
 
-Task("PackageTemplate")
+Task("PackAndPushTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
 
