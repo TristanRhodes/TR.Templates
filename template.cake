@@ -14,7 +14,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var apiKey = Argument<string>("ApiKey", null) ?? EnvironmentVariable<string>("ApiKey", "");
+var apiKey = Argument<string>("ApiKey", null) ?? EnvironmentVariable<string>("INPUT_APIKEY", "");
 
 
 Task("__TestTemplate")
