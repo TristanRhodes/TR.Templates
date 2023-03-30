@@ -17,5 +17,5 @@ jobs:
       - name: Run cake step
         uses: cake-build/cake-action@v1
         with:
-            script-path: template.cake
-            target: PackAndPushTemplate
+          script-path: template.cake
+          target: PackAndPushTemplate

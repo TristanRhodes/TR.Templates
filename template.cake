@@ -20,7 +20,7 @@ Task("__TestTemplate")
 	.Does(() => {
 		
 		Information("Running dotnet commands....");
-		var result = StartProcess("dotnet");
+		var result = StartProcess("dotnet", "new");
 		if (result != 0)
 			throw new ApplicationException($"Failed ({result})");
 
