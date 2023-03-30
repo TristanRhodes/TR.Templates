@@ -41,7 +41,7 @@ Task("PackAndPushTemplate")
 	.Does(() => {
 
 		Information("Loading git version...");
-		version = GitVersion();
+		var version = GitVersion();
 		Information("Writing..");
 		Information(SerializeJsonPretty(version));
 
