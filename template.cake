@@ -25,7 +25,7 @@ Task("__TestTemplate")
 			throw new ApplicationException($"Failed ({result})");
 
 		Information("Installing Template...");
-		var installResult = StartProcess("dotnet", @"new install .\templates\TestedLibrary --force");
+		var installResult = StartProcess("dotnet", @"new install ./templates/TestedLibrary --force");
 		if (installResult != 0)
 			throw new ApplicationException($"Failed installation ({installResult})");
 
