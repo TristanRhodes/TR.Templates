@@ -42,6 +42,7 @@ Task("PackAndPushTemplate")
 		
 		Information("Loading git version...");
 		var version = GitVersion();
+		Information("Writing..");
 		Information(SerializeJsonPretty(version));
 
 		Information("Setting up parameters...");
