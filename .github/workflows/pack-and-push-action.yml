@@ -11,10 +11,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # This is nescessary so it does not conflict with git-version
-  
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
 
       - name: Run cake step
         uses: cake-build/cake-action@v1
