@@ -41,6 +41,8 @@ Task("PackAndPushTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
 
+		Information($"Api Key Length: {apiKey.Length}");
+
 		Information("Loading git version...");
 		var version = GitVersion();
 		Information("Writing..");
