@@ -1,6 +1,7 @@
 
-name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions ??
+name: Pack and Push Template
+run-name: Pack and push project templates
+
 on: [push]
 jobs:
   Pack-And-Push-Template:

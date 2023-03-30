@@ -19,6 +19,11 @@ var configuration = Argument("configuration", "Release");
 Task("__TestTemplate")
 	.Does(() => {
 		
+		Information("Running dotnet commands....");
+		var result = StartProcess("dotnet");
+		if (result != 0)
+			throw new ApplicationException($"Failed ({result})");
+
 		Information("Installing Template...");
 		var installResult = StartProcess("dotnet", @"new install .\templates\TestedLibrary --force");
 		if (installResult != 0)
