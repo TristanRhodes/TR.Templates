@@ -2,7 +2,11 @@
 name: Pack and Push Template
 run-name: Pack and push project templates
 
-on: [push]
+on:
+  push:
+    branches:    
+      - main
+
 jobs:
   Pack-And-Push-Template:
     runs-on: ubuntu-latest
