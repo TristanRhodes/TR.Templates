@@ -6,8 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS
 ///////////////////////////////////////////////////////////////////////////////
-//#tool dotnet:?package=GitVersion.Tool&version=5.12.0
-#tool nuget:?package=GitVersion.CommandLine
+#tool dotnet:?package=GitVersion.Tool&version=5.12.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -41,6 +40,11 @@ Task("PackAndPushTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
 		
+		Information("Installing tool...");
+		var installResult = StartProcess("dotnet", @"tool install --global GitVersion.Tool");
+		if (installResult != 0)
+			throw new ApplicationException($"Failed to install gitversion ({installResult})");
+
 		Information("Loading git version...");
 		var version = GitVersion();
 		Information("Writing..");
