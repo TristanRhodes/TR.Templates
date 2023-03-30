@@ -19,11 +19,6 @@ var configuration = Argument("configuration", "Release");
 Task("__TestTemplate")
 	.Does(() => {
 		
-		Information("Running dotnet commands....");
-		var result = StartProcess("dotnet", "new");
-		if (result != 0)
-			throw new ApplicationException($"Failed ({result})");
-
 		Information("Installing Template...");
 		var installResult = StartProcess("dotnet", @"new install ./templates/TestedLibrary --force");
 		if (installResult != 0)
@@ -44,10 +39,12 @@ Task("__TestTemplate")
 Task("PackAndPushTemplate")
 	.IsDependentOn("__TestTemplate")
 	.Does(() => {
-
+		
+		Information("Loading git version...");
 		var version = GitVersion();
 		Information(SerializeJsonPretty(version));
 
+		Information("Setting up parameters...");
 		var versionNumber = version.SemVer;
 		var packageName = $"TestTemplate.{versionNumber}.nupkg";
 		var source = "https://nuget.pkg.github.com/TristanRhodes/index.json";
