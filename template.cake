@@ -18,14 +18,17 @@ var configuration = Argument("configuration", "Release");
 
 Task("__TestTemplate")
 	.Does(() => {
-
+		
+		Information("Installing Template...");
 		var installResult = StartProcess("dotnet", @"new install .\templates\TestedLibrary --force");
 		if (installResult != 0)
 			throw new ApplicationException($"Failed installation ({installResult})");
 
+		Information("Cleaning folders...");
 		if (System.IO.Directory.Exists(@".\bin\template-proj"))
 			System.IO.Directory.Delete(@".\bin\template-proj", true);
 
+		Information("Creating Template Instance...");
 		var createResult = StartProcess("dotnet", @"new tr/tested-library --output .\bin\template-proj --ProjectName CakeTest");
 		if (createResult != 0)
 			throw new ApplicationException($"Failed create ({createResult})");
