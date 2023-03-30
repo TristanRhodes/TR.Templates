@@ -30,15 +30,15 @@ Task("__TestTemplate")
 			throw new ApplicationException($"Failed installation ({installResult})");
 
 		Information("Cleaning folders...");
-		if (System.IO.Directory.Exists(@".\bin\template-proj"))
-			System.IO.Directory.Delete(@".\bin\template-proj", true);
+		if (System.IO.Directory.Exists(@"./bin/template-proj"))
+			System.IO.Directory.Delete(@"./bin/template-proj", true);
 
 		Information("Creating Template Instance...");
-		var createResult = StartProcess("dotnet", @"new tr/tested-library --output .\bin\template-proj --ProjectName CakeTest");
+		var createResult = StartProcess("dotnet", @"new tr/tested-library --output ./bin/template-proj --ProjectName CakeTest");
 		if (createResult != 0)
 			throw new ApplicationException($"Failed create ({createResult})");
 
-		DotNetTest(@".\bin\template-proj\CakeTest.sln");
+		DotNetTest(@"./bin/template-proj/CakeTest.sln");
 	});
 
 Task("PackAndPushTemplate")
