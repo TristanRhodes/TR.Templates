@@ -1,7 +1,7 @@
 ﻿///////////////////////////////////////////////////////////////////////////////
 // ADDINS
 ///////////////////////////////////////////////////////////////////////////////
-#addin nuget:?package=Cake.Json&version=7.0.0
+#addin nuget:?package=Cake.Json&version=7.0.1
 
 ///////////////////////////////////////////////////////////////////////////////
 // TOOLS
@@ -33,7 +33,8 @@ Task("__TestTemplate")
 		var createResult = StartProcess("dotnet", @"new tr/tested-library --output ./bin/template-proj --ProjectName CakeTest");
 		if (createResult != 0)
 			throw new ApplicationException($"Failed create ({createResult})");
-
+			
+		Information("Testing...");
 		DotNetTest(@"./bin/template-proj/CakeTest.sln");
 	});
 
@@ -43,7 +44,8 @@ Task("PackAndPushTemplate")
 
 		Information("Loading git version...");
 		var version = GitVersion();
-		Information("Writing..");
+
+		Information("Writing...");
 		Information(SerializeJsonPretty(version));
 
 		Information("Setting up parameters...");
@@ -65,8 +67,6 @@ Task("PackAndPushTemplate")
 			MSBuildSettings = settings
 		};
 		DotNetPack("template.csproj", packSettings);
-
-		// https://gitversion.net/docs/usage/cli/installation
 
 		Information("Pushing...");
 		var pushSettings = new DotNetNuGetPushSettings

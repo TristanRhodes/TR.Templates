@@ -2,13 +2,29 @@
 
 This repo is aiming to become a small installable project template I can use to easily spin up new repos with tested, publishable class libraries, published as nuget packages.
 
+## Disclaimer
+Document is a work in progress.
+
+## Tools
+* GitVersion - https://gitversion.net/
+* Github Actions - https://docs.github.com/en/actions
+* Github Packages - https://docs.github.com/en/packages
+* Build.cake - https://cakebuild.net/
+* Dotnet Custom Templates (MSBuild) - https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
+
+## Secrets Policy
+
+TODO: Token generation, storage and injection into GHA.
+
+
+## NOTES
+
 ### Templating
 
 For more on templating, see here:
 
 https://github.com/dotnet/templating
 
-https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
 
 
 ### To Test Template Generation
@@ -36,3 +52,4 @@ dotnet cake template.cake --Target=PackageTemplate
 To pack and publish: `dotnet cake template.cake --Target=PackAndPushTemplate --ApiKey={key}`
 
 Note - currently this only pushes to my personal package feed.
+
