@@ -66,8 +66,7 @@ Task("PackAndPushTemplate")
 		};
 		DotNetPack("template.csproj", packSettings);
 
-
-		https://gitversion.net/docs/usage/cli/installation
+		// https://gitversion.net/docs/usage/cli/installation
 
 		Information("Pushing...");
 		var pushSettings = new DotNetNuGetPushSettings

@@ -32,9 +32,7 @@ See section tab: https://docs.github.com/en/packages/quickstart
 
 dotnet cake template.cake --Target=PackageTemplate
 
-#### This works...
-dotnet nuget add source https://nuget.pkg.github.com/TristanRhodes/index.json -n GithubRoot
-dotnet nuget push TestTemplate.1.0.0.nupkg -s GithubRoot -k {key}
+#### To package and publish
+To pack and publish: `dotnet cake template.cake --Target=PackAndPushTemplate --ApiKey={key}`
 
-Include project url in template document to link to repository, eg:
-`<RepositoryUrl>https://github.com/TristanRhodes/TestedLibraryTemplate</RepositoryUrl>`
+Note - currently this only pushes to my personal package feed.
