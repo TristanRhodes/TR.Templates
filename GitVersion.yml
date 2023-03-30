@@ -1,0 +1,6 @@
+# For more on gitversion config:
+# https://gitversion.net/docs/reference/configuration
+
+mode: Mainline
+next-version: 0.1
+increment: Inherit

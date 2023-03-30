@@ -14,36 +14,44 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
+var apiKey = Argument<string>("ApiKey", null) ?? EnvironmentVariable<string>("INPUT_APIKEY", "");
 
 
-Task("__TestTemplate")
+Task("InstallAndTestTemplate")
 	.Does(() => {
-
-		var installResult = StartProcess("dotnet", @"new install .\templates\TestedLibrary --force");
+		
+		Information("Installing Template...");
+		var installResult = StartProcess("dotnet", @"new install ./templates/TestedLibrary --force");
 		if (installResult != 0)
 			throw new ApplicationException($"Failed installation ({installResult})");
 
-		if (System.IO.Directory.Exists(@".\bin\template-proj"))
-			System.IO.Directory.Delete(@".\bin\template-proj", true);
+		Information("Cleaning folders...");
+		if (System.IO.Directory.Exists(@"./bin/template-proj"))
+			System.IO.Directory.Delete(@"./bin/template-proj", true);
 
-		var createResult = StartProcess("dotnet", @"new tr/tested-library --output .\bin\template-proj --ProjectName CakeTest");
+		Information("Creating Template Instance...");
+		var createResult = StartProcess("dotnet", @"new tr/tested-library --output ./bin/template-proj --ProjectName CakeTest");
 		if (createResult != 0)
 			throw new ApplicationException($"Failed create ({createResult})");
-
-		DotNetTest(@".\bin\template-proj\CakeTest.sln");
+			
+		Information("Testing...");
+		DotNetTest(@"./bin/template-proj/CakeTest.sln");
 	});
 
-Task("PackageTemplate")
-	.IsDependentOn("__TestTemplate")
+Task("PackAndPushTemplate")
+	.IsDependentOn("InstallAndTestTemplate")
 	.Does(() => {
 
+		Information("Loading git version...");
 		var version = GitVersion();
+
+		Information("Writing...");
 		Information(SerializeJsonPretty(version));
 
+		Information("Setting up parameters...");
 		var versionNumber = version.SemVer;
 		var packageName = $"TestTemplate.{versionNumber}.nupkg";
 		var source = "https://nuget.pkg.github.com/TristanRhodes/index.json";
-		var key = "{KEY}";
 
 		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 		Information("Packing...");
@@ -60,14 +68,11 @@ Task("PackageTemplate")
 		};
 		DotNetPack("template.csproj", packSettings);
 
-
-		https://gitversion.net/docs/usage/cli/installation
-
 		Information("Pushing...");
 		var pushSettings = new DotNetNuGetPushSettings
 		{
 			Source = source,
-			ApiKey = key
+			ApiKey = apiKey
 		};
 		DotNetNuGetPush($"artifacts/{packageName}", pushSettings);
 	});
