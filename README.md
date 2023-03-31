@@ -32,10 +32,10 @@ Note: Tried this with username password
 `--username {your-github-user} --password {your-github-password}` but this does not work on the auth side. Would like this so that anyone can access public package feeds.
 
 For latest version:
-Run: `dotnet new install TestTemplate --nuget-source TR.Packages --force'
+Run: `dotnet new install TestTemplate --nuget-source TR.Packages --force`
 
 For specific version:
-Run: `dotnet new install TestTemplate::0.1.0 --nuget-source TR.Packages --force'
+Run: `dotnet new install TestTemplate::0.1.0 --nuget-source TR.Packages --force`
 
 For some reason this hits the url:
 https://nuget.pkg.github.com/TristanRhodes/index.json/FindPackagesById()?id='TestTemplate'&semVerLevel=2.0.0
