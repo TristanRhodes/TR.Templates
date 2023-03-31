@@ -17,6 +17,12 @@ var configuration = Argument("configuration", "Release");
 var apiKey = Argument<string>("ApiKey", null) ?? EnvironmentVariable<string>("INPUT_APIKEY", "");
 
 
+Task("VersionInfo")
+	.Does(() => {
+		var version = GitVersion();
+		Information(SerializeJsonPretty(version));
+	});
+
 Task("InstallAndTestTemplate")
 	.Does(() => {
 		
