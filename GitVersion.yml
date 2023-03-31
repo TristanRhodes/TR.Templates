@@ -2,5 +2,5 @@
 # https://gitversion.net/docs/reference/configuration
 
 mode: Mainline
-next-version: 0.1
+next-version: 0.1.0
 increment: Inherit
