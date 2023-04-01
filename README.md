@@ -9,7 +9,7 @@ This is a work in progress.
 * GitVersion - https://gitversion.net/
 * Github Actions - https://docs.github.com/en/actions
 * Github Packages - https://docs.github.com/en/packages
-* Build.cake - https://cakebuild.net/
+* Cake Build - https://cakebuild.net/
 * Dotnet Custom Templates (MSBuild) - https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
 
 ## Secrets Policy
