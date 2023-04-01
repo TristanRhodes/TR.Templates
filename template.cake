@@ -28,6 +28,8 @@ Setup(context =>
     if (string.IsNullOrEmpty(packageSource))
 		throw new ArgumentException("Source is required");
 
+	Information("Source: " + packageSource);
+
     if (string.IsNullOrEmpty(apiKey))
 		throw new ArgumentException("ApiKey is required");
 });
