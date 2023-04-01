@@ -21,5 +21,3 @@ jobs:
         with:
           script-path: template.cake
           target: InstallAndTestTemplate
-          ApiKey: ${{ secrets.MYGET_APIKEY }}
-          Source: ${{ vars.MYGET_SOURCE }}
