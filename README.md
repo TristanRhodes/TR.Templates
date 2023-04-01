@@ -36,7 +36,6 @@ Install Template Package:
 Create new project:
 `dotnet new Template.TestedLibrary --ProjectName={MyProjectName}`
 
-
 ### Forking
 If you want to fork this and push your template to your own package feed, you'll need to configure the following in your repo:
 
@@ -46,8 +45,4 @@ If you want to fork this and push your template to your own package feed, you'll
 * Under `Variables`/`Repository Variables`, create `NUGET_SOURCE` and put your package source package URL here.
 * Under `Secrets`, create `NUGET_APIKEY` and put your package source API key here.
 * These feed into `Github Actions` and are injected into the `Cake Build` step.
-
-
-
-
-
+* When the GHA run the `PackAndPushTemplate` your package will be generated and pushed to the feed.
