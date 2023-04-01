@@ -14,11 +14,19 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
-var packageSource = Argument<string>("Source", null) ?? 
-	EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA to Cake
+var packageSource = Argument<string>("Source", null) 
+	?? EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA to Cake
 
-var apiKey = Argument<string>("ApiKey", null) ?? 
-	EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
+var apiKey = Argument<string>("ApiKey", null) 
+	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
+
+var packageName = Argument<string>("PackageName", null) 
+	?? EnvironmentVariable<string>("INPUT_PACKAGENAME", null) // Input from GHA to Cake
+	?? "Template.TestedLibrary";
+
+string versionNumber;
+string fullPackageName;
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup / Teardown
@@ -49,13 +57,18 @@ Task("VersionInfo")
 	.Does(() => {
 		var version = GitVersion();
 		Information(SerializeJsonPretty(version));
+		
+		versionNumber = version.SemVer;
+		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
+
+		Information($"Full package Name: {fullPackageName}");
 	});
 
 Task("InstallAndTestTemplate")
 	.Does(() => {
 		
 		Information("Installing Template...");
-		var installResult = StartProcess("dotnet", @"new install ./templates/TestedLibrary --force");
+		var installResult = StartProcess("dotnet", @"new install ./template/ --force");
 		if (installResult != 0)
 			throw new ApplicationException($"Failed installation ({installResult})");
 
@@ -64,28 +77,23 @@ Task("InstallAndTestTemplate")
 			System.IO.Directory.Delete(@"./bin/template-proj", true);
 
 		Information("Creating Template Instance...");
-		var createResult = StartProcess("dotnet", @"new tr/tested-library --output ./bin/template-proj --ProjectName CakeTest");
+		var createResult = StartProcess("dotnet", @"new Template.TestedLibrary --output ./bin/template-proj --ProjectName CakeTest");
 		if (createResult != 0)
 			throw new ApplicationException($"Failed create ({createResult})");
 			
 		Information("Testing...");
 		DotNetTest(@"./bin/template-proj/CakeTest.sln");
+
+		var removeResult = StartProcess("dotnet", @"new uninstall ./template/");
+		if (removeResult != 0)
+			throw new ApplicationException($"Failed create ({createResult})");
 	});
 
 Task("PackAndPushTemplate")
 	.IsDependentOn("__PackageArgsCheck")
+	.IsDependentOn("VersionInfo")
 	.IsDependentOn("InstallAndTestTemplate")
 	.Does(() => {
-
-		Information("Loading git version...");
-		var version = GitVersion();
-
-		Information("Writing...");
-		Information(SerializeJsonPretty(version));
-
-		Information("Setting up parameters...");
-		var versionNumber = version.SemVer;
-		var packageName = $"TestTemplate.{versionNumber}.nupkg";
 
 		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 		Information("Packing...");
@@ -100,7 +108,7 @@ Task("PackAndPushTemplate")
 			OutputDirectory = "./artifacts/",
 			MSBuildSettings = settings
 		};
-		DotNetPack("template.csproj", packSettings);
+		DotNetPack("Template.TestedLibrary.csproj", packSettings);
 
 		Information("Pushing...");
 		var pushSettings = new DotNetNuGetPushSettings
@@ -108,7 +116,7 @@ Task("PackAndPushTemplate")
 			Source = packageSource,
 			ApiKey = apiKey
 		};
-		DotNetNuGetPush($"artifacts/{packageName}", pushSettings);
+		DotNetNuGetPush($"artifacts/{fullPackageName}", pushSettings);
 	});
 
 Task("Default")
