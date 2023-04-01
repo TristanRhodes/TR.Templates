@@ -11,7 +11,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
-
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
@@ -21,7 +20,26 @@ var packageSource = Argument<string>("Source", null) ??
 var apiKey = Argument<string>("ApiKey", null) ?? 
 	EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
+///////////////////////////////////////////////////////////////////////////////
+// Setup / Teardown
+///////////////////////////////////////////////////////////////////////////////
+Setup(context =>
+{
+    if (string.IsNullOrEmpty(packageSource))
+		throw new ArgumentException("Source is required");
 
+    if (string.IsNullOrEmpty(apiKey))
+		throw new ArgumentException("ApiKey is required");
+});
+
+Teardown(context =>
+{
+    // Executed AFTER the last task.
+});
+
+///////////////////////////////////////////////////////////////////////////////
+// Tasks
+///////////////////////////////////////////////////////////////////////////////
 Task("VersionInfo")
 	.Does(() => {
 		var version = GitVersion();
