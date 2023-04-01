@@ -8,8 +8,9 @@ This is a work in progress.
 ## Tools
 * GitVersion - https://gitversion.net/
 * Github Actions - https://docs.github.com/en/actions
-* Github Packages - https://docs.github.com/en/packages
+* Github Packages - https://docs.github.com/en/packages (Actually now publishing to myget)
 * Cake Build - https://cakebuild.net/
+* Dotnet Pack - https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 * Dotnet Custom Templates (MSBuild) - https://learn.microsoft.com/en-us/dotnet/core/tools/custom-templates
 
 ## Secrets Policy
@@ -17,7 +18,7 @@ This is a work in progress.
 TODO: Token generation, storage and injection into GHA.
 
 ## To build and test project
-Run: `dotnet cake template.cake --Target=InstallAndTestTemplate --Source={Source} --ApiKey={key}`
+Run: `dotnet cake template.cake --Target=InstallAndTestTemplate`
 
 ## To package and publish
 Run: `dotnet cake template.cake --Target=PackAndPushTemplate --Source={Source} --ApiKey={key}`
@@ -25,44 +26,26 @@ Run: `dotnet cake template.cake --Target=PackAndPushTemplate --Source={Source} -
 ## Package Feed:
 Packages currently publish to my personal feed by default: https://www.myget.org/F/tr-public/api/v3/index.json
 
-
 ## Install and Create New Project
 Setup package feed:
 `dotnet nuget add source https://www.myget.org/F/tr-public/api/v3/index.json --name TR.Packages`
 
-For latest version:
-`dotnet new install TestTemplate --nuget-source TR.Packages --force`
+Install Template Package:
+`dotnet new install Template.TestedLibrary --nuget-source TR.Packages --force`
 
-For specific version:
-`dotnet new install TestTemplate::0.1.0 --nuget-source TR.Packages --force`
+Create new project:
+`dotnet new Template.TestedLibrary --ProjectName={MyProjectName}`
 
-## GitVersion
 
-In order for GitVersion to work properly in a repository, it needs a tag to base the original commit marker off.
+### Forking
+If you want to fork this and push your template to your own package feed, you'll need to configure the following in your repo:
 
-You achieve this by tagging your repository with `{Major}.{Minor}.0` and letting the commit counter increment with each PR / Merge.
-
-## NOTES
-
-### Dotnet Templating
-
-https://github.com/dotnet/templating
-
-### To Test Template Generation
-Run: `dotnet cake template.cake`
-
-### To Package the template
-Run: `dotnet pack`
-
-### To Generate a template
-Run: `dotnet new tr/tested-library --output .\bin\template-proj --ProjectName {ProjectName}`
-
-### For packaging to Github NuGet:
-
-Create Personal access token: 
-https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token
-
-https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry
+* Create your personal NuGet feed
+* Generate / lookup the API key for feed
+* Go to your repository `settings` => `Secrets and variables` => `Actions`
+* Under `Variables`/`Repository Variables`, create `NUGET_SOURCE` and put your package source package URL here.
+* Under `Secrets`, create `NUGET_APIKEY` and put your package source API key here.
+* These feed into `Github Actions` and are injected into the `Cake Build` step.
 
 
 
