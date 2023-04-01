@@ -14,7 +14,12 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var apiKey = Argument<string>("ApiKey", null) ?? EnvironmentVariable<string>("INPUT_APIKEY", "");
+
+var packageSource = Argument<string>("Source", null) ?? 
+	EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA
+
+var apiKey = Argument<string>("ApiKey", null) ?? 
+	EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA
 
 
 Task("VersionInfo")
@@ -57,7 +62,6 @@ Task("PackAndPushTemplate")
 		Information("Setting up parameters...");
 		var versionNumber = version.SemVer;
 		var packageName = $"TestTemplate.{versionNumber}.nupkg";
-		var source = "https://nuget.pkg.github.com/TristanRhodes/index.json";
 
 		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 		Information("Packing...");
@@ -77,7 +81,7 @@ Task("PackAndPushTemplate")
 		Information("Pushing...");
 		var pushSettings = new DotNetNuGetPushSettings
 		{
-			Source = source,
+			Source = packageSource,
 			ApiKey = apiKey
 		};
 		DotNetNuGetPush($"artifacts/{packageName}", pushSettings);

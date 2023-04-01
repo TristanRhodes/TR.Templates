@@ -17,30 +17,30 @@ This is a work in progress.
 TODO: Token generation, storage and injection into GHA.
 
 ## To build and test project
-Run: `dotnet cake template.cake --Target=InstallAndTestTemplate --ApiKey={key}`
+Run: `dotnet cake template.cake --Target=InstallAndTestTemplate --Source={Source} --ApiKey={key}`
 
 ## To package and publish
-Run: `dotnet cake template.cake --Target=PackAndPushTemplate --ApiKey={key}`
+Run: `dotnet cake template.cake --Target=PackAndPushTemplate --Source={Source} --ApiKey={key}`
 
-Note - currently this only pushes to my personal package feed.
+## Package Feed:
+Packages currently publish to my personal feed by default: https://www.myget.org/F/tr-public/api/v3/index.json
+
 
 ## Install and Create New Project
 Setup package feed:
-`dotnet nuget add source https://nuget.pkg.github.com/TristanRhodes/index.json?apikey={apikey} --name TR.Packages`
-
-Note: Tried this with username password
-`--username {your-github-user} --password {your-github-password}` but this does not work on the auth side. Would like this so that anyone can access public package feeds.
+`dotnet nuget add source https://www.myget.org/F/tr-public/api/v3/index.json --name TR.Packages`
 
 For latest version:
-Run: `dotnet new install TestTemplate --nuget-source TR.Packages --force`
+`dotnet new install TestTemplate --nuget-source TR.Packages --force`
 
 For specific version:
-Run: `dotnet new install TestTemplate::0.1.0 --nuget-source TR.Packages --force`
+`dotnet new install TestTemplate::0.1.0 --nuget-source TR.Packages --force`
 
-For some reason this hits the url:
-https://nuget.pkg.github.com/TristanRhodes/index.json/FindPackagesById()?id='TestTemplate'&semVerLevel=2.0.0
+## GitVersion
 
-Then returns 405 (Method Not Allowed) and we're not getting a search result from the nuget feed. This is not an auth problems though.
+In order for GitVersion to work properly in a repository, it needs a tag to base the original commit marker off.
+
+You achieve this by tagging your repository with `{Major}.{Minor}.0` and letting the commit counter increment with each PR / Merge.
 
 ## NOTES
 
