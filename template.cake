@@ -100,7 +100,7 @@ Task("PackAndPushTemplate")
 			OutputDirectory = "./artifacts/",
 			MSBuildSettings = settings
 		};
-		DotNetPack("template.csproj", packSettings);
+		DotNetPack("Template.TestLibrary.csproj", packSettings);
 
 		Information("Pushing...");
 		var pushSettings = new DotNetNuGetPushSettings

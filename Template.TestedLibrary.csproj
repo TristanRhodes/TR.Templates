@@ -3,11 +3,11 @@
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageVersion>1.0</PackageVersion>
-    <PackageId>TestTemplate</PackageId>
-    <Title>TestTemplate</Title>
+    <PackageId>Template.TestedLibrary</PackageId>
+    <Title>Tested Library Template</Title>
     <RepositoryUrl>https://github.com/TristanRhodes/TestedLibraryTemplate</RepositoryUrl>
     <Authors>Me</Authors>
-    <Description>Templates to use when creating an application.</Description>
+    <Description>Create a new library project with unit tests, benchmarks, cake build and release scripts and basic Github action runners.</Description>
     <PackageTags>dotnet-new;templates</PackageTags>
     <TargetFramework>net6.0</TargetFramework>
     <IncludeContentInPack>true</IncludeContentInPack>
