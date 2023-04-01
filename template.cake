@@ -16,10 +16,10 @@ var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
 var packageSource = Argument<string>("Source", null) ?? 
-	EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA
+	EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA to Cake
 
 var apiKey = Argument<string>("ApiKey", null) ?? 
-	EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA
+	EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
 
 Task("VersionInfo")
