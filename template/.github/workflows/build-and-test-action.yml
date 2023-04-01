@@ -1,14 +1,14 @@
 
-name: Pack and Push Template
-run-name: Pack and push project templates
+name: Build and Test Template
+run-name: Build and Test Project Template
 
 on:
-  push:
+  pull_request:
     branches:    
       - master
 
 jobs:
-  Pack-And-Push-Template:
+  Build-And-Test-Template:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -20,6 +20,4 @@ jobs:
         uses: cake-build/cake-action@v1
         with:
           script-path: build.cake
-          target: PackAndPush
-          ApiKey: ${{ secrets.NUGET_APIKEY }}
-          Source: ${{ vars.NUGET_SOURCE }}
+          target: BuildAndTest
