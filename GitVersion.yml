@@ -1,22 +1,4 @@
 # For more on gitversion config:
 # https://gitversion.net/docs/reference/configuration
 
-next-version: 0.1.0
-assembly-versioning-scheme: MajorMinorPatch
-increment: Inherit
-update-build-number: true
-branches:
-  main:
-    regex: ^master$|^main$
-    mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    is-mainline: true
-  master:
-    regex: ^master$|^main$
-    mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    is-mainline: true
+mode: Mainline

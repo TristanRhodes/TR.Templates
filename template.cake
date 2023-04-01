@@ -25,11 +25,7 @@ var apiKey = Argument<string>("ApiKey", null) ??
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    if (string.IsNullOrEmpty(packageSource))
-		throw new ArgumentException("Source is required");
-
-    if (string.IsNullOrEmpty(apiKey))
-		throw new ArgumentException("ApiKey is required");
+    // Executed BEFORE the first task.
 });
 
 Teardown(context =>
@@ -40,6 +36,15 @@ Teardown(context =>
 ///////////////////////////////////////////////////////////////////////////////
 // Tasks
 ///////////////////////////////////////////////////////////////////////////////
+Task("__PackageArgsCheck")
+	.Does(() => {
+		if (string.IsNullOrEmpty(packageSource))
+			throw new ArgumentException("Source is required");
+
+		if (string.IsNullOrEmpty(apiKey))
+			throw new ArgumentException("ApiKey is required");
+	});
+
 Task("VersionInfo")
 	.Does(() => {
 		var version = GitVersion();
@@ -68,6 +73,7 @@ Task("InstallAndTestTemplate")
 	});
 
 Task("PackAndPushTemplate")
+	.IsDependentOn("__PackageArgsCheck")
 	.IsDependentOn("InstallAndTestTemplate")
 	.Does(() => {
 
