@@ -21,5 +21,5 @@ jobs:
         with:
           script-path: template.cake
           target: PackAndPushTemplate
-          ApiKey: ${{ secrets.MYGET_APIKEY }}
-          Source: ${{ vars.MYGET_SOURCE }}
+          ApiKey: ${{ secrets.NUGET_APIKEY }}
+          Source: ${{ vars.NUGET_SOURCE }}
