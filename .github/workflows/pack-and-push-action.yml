@@ -21,4 +21,5 @@ jobs:
         with:
           script-path: template.cake
           target: PackAndPushTemplate
-          ApiKey: ${{ secrets.GITHUBAPIKEY }}
+          ApiKey: ${{ secrets.MYGET_APIKEY }}
+          Source: ${{ secrets.MYGET_SOURCE }}
