@@ -22,4 +22,4 @@ jobs:
           script-path: template.cake
           target: InstallAndTestTemplate
           ApiKey: ${{ secrets.MYGET_APIKEY }}
-          Source: ${{ secrets.MYGET_SOURCE }}
+          Source: ${{ env.MYGET_SOURCE }}
