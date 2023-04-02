@@ -12,6 +12,7 @@
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
 var target = Argument("target", "Default");
+
 var configuration = Argument("configuration", "Release");
 
 var packageSource = Argument<string>("Source", null) 
@@ -65,8 +66,17 @@ Task("VersionInfo")
 
 Task("BuildAndTest")
 	.Does(() => {
-		Information("Testing...");
 		DotNetTest(@"./TestedLibrary.sln");
+	});
+
+Task("BuildAndBenchmark")
+	.Does(() => {
+		 var settings = new DotNetRunSettings
+		 {
+			 Configuration = "Release" // Release build is required for benchmark
+		 };
+
+		DotNetRun(@"./test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj", settings);
 	});
 
 Task("PackAndPush")
@@ -75,7 +85,6 @@ Task("PackAndPush")
 	.IsDependentOn("BuildAndTest")
 	.Does(() => {
 
-		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 		Information("Packing...");
 		var settings = new DotNetMSBuildSettings
 		{
