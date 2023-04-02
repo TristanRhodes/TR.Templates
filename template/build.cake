@@ -21,9 +21,7 @@ var packageSource = Argument<string>("Source", null)
 var apiKey = Argument<string>("ApiKey", null) 
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
-var packageName = Argument<string>("PackageName", null) 
-	?? EnvironmentVariable<string>("INPUT_PACKAGENAME", null) // Input from GHA to Cake
-	?? "TestedLibrary";
+var packageName = "TestedLibrary";
 
 string versionNumber;
 string fullPackageName;
@@ -55,26 +53,43 @@ Task("__PackageArgsCheck")
 
 Task("VersionInfo")
 	.Does(() => {
+
 		var version = GitVersion();
 		Information(SerializeJsonPretty(version));
-		
 		versionNumber = version.SemVer;
-		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
 
+		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
 		Information($"Full package Name: {fullPackageName}");
 	});
 
 Task("BuildAndTest")
 	.Does(() => {
-		DotNetTest(@"./TestedLibrary.sln");
+
+		var settings = new DotNetTestSettings
+		{
+			Configuration = configuration,
+			ResultsDirectory = "./artifacts/"
+		};
+
+		settings.Loggers.Add("console;verbosity=normal");
+		settings.Loggers.Add("trx;logfilename=TestedLibrary.Tests.trx");
+
+		DotNetTest(@"./TestedLibrary.sln", settings);
 	});
 
 Task("BuildAndBenchmark")
 	.Does(() => {
-		 var settings = new DotNetRunSettings
-		 {
-			 Configuration = "Release" // Release build is required for benchmark
-		 };
+
+		var settings = new DotNetRunSettings
+		{
+			Configuration = "Release", 
+			ArgumentCustomization = args => {
+
+				return args
+					.Append("--artifacts")
+					.AppendQuoted("./artifacts/TestedLibrary.Benchmark");
+			}
+		};
 
 		DotNetRun(@"./test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj", settings);
 	});
@@ -94,7 +109,7 @@ Task("PackAndPush")
 		var packSettings = new DotNetPackSettings
 		{
 			Configuration = "Release",
-			OutputDirectory = "./artifacts/",
+			OutputDirectory = "./artifacts/packages",
 			MSBuildSettings = settings
 		};
 		DotNetPack("src/TestedLibrary/TestedLibrary.csproj", packSettings);
@@ -105,7 +120,7 @@ Task("PackAndPush")
 			Source = packageSource,
 			ApiKey = apiKey
 		};
-		DotNetNuGetPush($"artifacts/{fullPackageName}", pushSettings);
+		DotNetNuGetPush($"artifacts/packages/{fullPackageName}", pushSettings);
 	});
 
 Task("Default")
