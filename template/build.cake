@@ -71,7 +71,10 @@ Task("BuildAndTest")
 			ResultsDirectory = "./artifacts/"
 		};
 
+		// Console log for build agent
 		settings.Loggers.Add("console;verbosity=normal");
+		
+		// Logging for file artifacts
 		settings.Loggers.Add("trx;logfilename=TestedLibrary.Tests.trx");
 
 		DotNetTest(@"./TestedLibrary.sln", settings);
@@ -84,7 +87,6 @@ Task("BuildAndBenchmark")
 		{
 			Configuration = "Release", 
 			ArgumentCustomization = args => {
-
 				return args
 					.Append("--artifacts")
 					.AppendQuoted("./artifacts/TestedLibrary.Benchmark");
