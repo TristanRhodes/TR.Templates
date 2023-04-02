@@ -12,6 +12,7 @@
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
 var target = Argument("target", "Default");
+
 var configuration = Argument("configuration", "Release");
 
 var packageSource = Argument<string>("Source", null) 
@@ -20,9 +21,7 @@ var packageSource = Argument<string>("Source", null)
 var apiKey = Argument<string>("ApiKey", null) 
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
-var packageName = Argument<string>("PackageName", null) 
-	?? EnvironmentVariable<string>("INPUT_PACKAGENAME", null) // Input from GHA to Cake
-	?? "TestedLibrary";
+var packageName = "TestedLibrary";
 
 string versionNumber;
 string fullPackageName;
@@ -52,30 +51,62 @@ Task("__PackageArgsCheck")
 			throw new ArgumentException("ApiKey is required");
 	});
 
-Task("VersionInfo")
+Task("__UnitTest")
 	.Does(() => {
+		var settings = new DotNetTestSettings
+		{
+			Configuration = configuration,
+			ResultsDirectory = "./artifacts/"
+		};
+
+		// Console log for build agent
+		settings.Loggers.Add("console;verbosity=normal");
+		
+		// Logging for file artifacts
+		settings.Loggers.Add("trx;logfilename=TestedLibrary.Tests.trx");
+
+		DotNetTest(@"./TestedLibrary.sln", settings);
+	});
+
+Task("__Benchmark")
+	.Does(() => {
+		var settings = new DotNetRunSettings
+		{
+			Configuration = "Release", 
+			ArgumentCustomization = args => {
+				return args
+					.Append("--artifacts")
+					.AppendQuoted("./artifacts/TestedLibrary.Benchmark");
+			}
+		};
+
+		DotNetRun(@"./test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj", settings);
+	});
+
+Task("__VersionInfo")
+	.Does(() => {
+
 		var version = GitVersion();
 		Information(SerializeJsonPretty(version));
-		
 		versionNumber = version.SemVer;
-		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
 
+		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
 		Information($"Full package Name: {fullPackageName}");
 	});
 
 Task("BuildAndTest")
-	.Does(() => {
-		Information("Testing...");
-		DotNetTest(@"./TestedLibrary.sln");
-	});
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark");
+
+Task("BuildAndBenchmark")
+	.IsDependentOn("__Benchmark");
 
 Task("PackAndPush")
 	.IsDependentOn("__PackageArgsCheck")
-	.IsDependentOn("VersionInfo")
+	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("BuildAndTest")
 	.Does(() => {
 
-		// https://learn.microsoft.com/en-us/dotnet/core/tools/dotnet-pack
 		Information("Packing...");
 		var settings = new DotNetMSBuildSettings
 		{
@@ -85,7 +116,7 @@ Task("PackAndPush")
 		var packSettings = new DotNetPackSettings
 		{
 			Configuration = "Release",
-			OutputDirectory = "./artifacts/",
+			OutputDirectory = "./artifacts/packages",
 			MSBuildSettings = settings
 		};
 		DotNetPack("src/TestedLibrary/TestedLibrary.csproj", packSettings);
@@ -96,7 +127,7 @@ Task("PackAndPush")
 			Source = packageSource,
 			ApiKey = apiKey
 		};
-		DotNetNuGetPush($"artifacts/{fullPackageName}", pushSettings);
+		DotNetNuGetPush($"artifacts/packages/{fullPackageName}", pushSettings);
 	});
 
 Task("Default")
