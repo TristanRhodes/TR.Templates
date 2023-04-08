@@ -14,10 +14,10 @@
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
 
-var packageSource = Argument<string>("Source", null) 
+var packageSource = Argument<string>("Source", null)      // Input from cmd args to Cake
 	?? EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA to Cake
 
-var apiKey = Argument<string>("ApiKey", null) 
+var apiKey = Argument<string>("ApiKey", null)		      // Input from cmd args to Cake
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
 var packageName = Argument<string>("PackageName", null) 

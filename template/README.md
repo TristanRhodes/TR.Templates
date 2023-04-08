@@ -9,3 +9,7 @@ All build artifacts are output to the `artifacts` folder in the project root dir
 - Benchmark Results: `artifacts/TestedLibrary.Benchmark`
 - Test Results: `artifacts/TestedLibrary.Tests.trx`
 - Package Output: `artifacts/TestedLibrary.{version}.nupkg`
+
+## Cake
+
+To run cake steps: `dotnet cake --Target=PackAndPush --Source=https://www.myget.org/F/tr-public/api/v3/index.json --ApiKey={apiKey}`

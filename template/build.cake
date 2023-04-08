@@ -1,4 +1,5 @@
-﻿///////////////////////////////////////////////////////////////////////////////
+﻿#load "../template.cake"
+///////////////////////////////////////////////////////////////////////////////
 // ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 #addin nuget:?package=Cake.Json&version=7.0.1
@@ -15,28 +16,44 @@ var target = Argument("target", "Default");
 
 var configuration = Argument("configuration", "Release");
 
-var packageSource = Argument<string>("Source", null) 
+var packageSource = Argument<string>("Source", null)	  // Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA to Cake
 
-var apiKey = Argument<string>("ApiKey", null) 
+var apiKey = Argument<string>("ApiKey", null)		      // Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
-var packageName = "TestedLibrary";
-
+string artifactsFolder = "./artifacts";
 string versionNumber;
 string fullPackageName;
+
+string[] packages = new[] 
+{
+	"src/TestedLibrary/TestedLibrary.csproj"
+};
+
+string[] tests = new[] 
+{
+	"test/TestedLibrary.UnitTests/TestedLibrary.UnitTests.csproj"
+};
+
+string[] benchmarks = new[] 
+{
+	"test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj"
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup / Teardown
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
-    // Executed BEFORE the first task.
+	// Clean artifacts
+	if (System.IO.Directory.Exists(artifactsFolder))
+		System.IO.Directory.Delete(artifactsFolder, true);
 });
 
 Teardown(context =>
 {
-    // Executed AFTER the last task.
+    
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -53,34 +70,46 @@ Task("__PackageArgsCheck")
 
 Task("__UnitTest")
 	.Does(() => {
-		var settings = new DotNetTestSettings
+
+		foreach(var test in tests)
 		{
-			Configuration = configuration,
-			ResultsDirectory = "./artifacts/"
-		};
+			var testName = System.IO.Path.GetFileNameWithoutExtension(test);
 
-		// Console log for build agent
-		settings.Loggers.Add("console;verbosity=normal");
+			var settings = new DotNetTestSettings
+			{
+				Configuration = configuration,
+				ResultsDirectory = artifactsFolder
+			};
+
+			// Console log for build agent
+			settings.Loggers.Add("console;verbosity=normal");
 		
-		// Logging for file artifacts
-		settings.Loggers.Add("trx;logfilename=TestedLibrary.Tests.trx");
+			// Logging for trx test report artifact
+			settings.Loggers.Add($"trx;logfilename={testName}.trx");
 
-		DotNetTest(@"./TestedLibrary.sln", settings);
+			DotNetTest(test, settings);
+		}
 	});
 
 Task("__Benchmark")
 	.Does(() => {
-		var settings = new DotNetRunSettings
-		{
-			Configuration = "Release", 
-			ArgumentCustomization = args => {
-				return args
-					.Append("--artifacts")
-					.AppendQuoted("./artifacts/TestedLibrary.Benchmark");
-			}
-		};
 
-		DotNetRun(@"./test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj", settings);
+		foreach(var benchmark in benchmarks)
+		{
+			var benchName = System.IO.Path.GetFileNameWithoutExtension(benchmark);
+
+			var settings = new DotNetRunSettings
+			{
+				Configuration = "Release", 
+				ArgumentCustomization = args => {
+					return args
+						.Append("--artifacts")
+						.AppendQuoted(System.IO.Path.Combine(artifactsFolder, benchName));
+				}
+			};
+
+			DotNetRun(benchmark, settings);
+		}
 	});
 
 Task("__VersionInfo")
@@ -89,14 +118,10 @@ Task("__VersionInfo")
 		var version = GitVersion();
 		Information(SerializeJsonPretty(version));
 		versionNumber = version.SemVer;
-
-		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
-		Information($"Full package Name: {fullPackageName}");
 	});
 
 Task("BuildAndTest")
-	.IsDependentOn("__UnitTest")
-	.IsDependentOn("__Benchmark");
+	.IsDependentOn("__UnitTest");
 
 Task("BuildAndBenchmark")
 	.IsDependentOn("__Benchmark");
@@ -104,33 +129,44 @@ Task("BuildAndBenchmark")
 Task("PackAndPush")
 	.IsDependentOn("__PackageArgsCheck")
 	.IsDependentOn("__VersionInfo")
-	.IsDependentOn("BuildAndTest")
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark")
 	.Does(() => {
 
-		Information("Packing...");
-		var settings = new DotNetMSBuildSettings
-		{
-			PackageVersion = versionNumber
-		};
+		var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
 
-		var packSettings = new DotNetPackSettings
+		foreach(var package in packages)
 		{
-			Configuration = "Release",
-			OutputDirectory = "./artifacts/packages",
-			MSBuildSettings = settings
-		};
-		DotNetPack("src/TestedLibrary/TestedLibrary.csproj", packSettings);
+			Information("$Packing {package}...");
+			var settings = new DotNetMSBuildSettings
+			{
+				PackageVersion = versionNumber
+			};
 
-		Information("Pushing...");
-		var pushSettings = new DotNetNuGetPushSettings
+			var packSettings = new DotNetPackSettings
+			{
+				Configuration = "Release",
+				OutputDirectory = packagesFolder,
+				MSBuildSettings = settings
+			};
+			DotNetPack(package, packSettings);
+		}
+		
+		var packedArtifacts = System.IO.Directory.EnumerateFiles(packagesFolder);
+		foreach(var package in packedArtifacts)
 		{
-			Source = packageSource,
-			ApiKey = apiKey
-		};
-		DotNetNuGetPush($"artifacts/packages/{fullPackageName}", pushSettings);
+			Information($"Pushing {package}...");
+			var pushSettings = new DotNetNuGetPushSettings
+			{
+				Source = packageSource,
+				ApiKey = apiKey
+			};
+			DotNetNuGetPush(package, pushSettings);
+		}
 	});
 
 Task("Default")
-    .IsDependentOn("BuildAndTest");
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark");
 
 RunTarget(target);
