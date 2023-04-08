@@ -120,8 +120,7 @@ Task("__VersionInfo")
 	});
 
 Task("BuildAndTest")
-	.IsDependentOn("__UnitTest")
-	.IsDependentOn("__Benchmark");
+	.IsDependentOn("__UnitTest");
 
 Task("BuildAndBenchmark")
 	.IsDependentOn("__Benchmark");
@@ -129,7 +128,8 @@ Task("BuildAndBenchmark")
 Task("PackAndPush")
 	.IsDependentOn("__PackageArgsCheck")
 	.IsDependentOn("__VersionInfo")
-	.IsDependentOn("BuildAndTest")
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark")
 	.Does(() => {
 
 		var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
@@ -165,6 +165,7 @@ Task("PackAndPush")
 	});
 
 Task("Default")
-    .IsDependentOn("BuildAndTest");
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark");
 
 RunTarget(target);
