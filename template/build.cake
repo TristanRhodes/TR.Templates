@@ -34,10 +34,23 @@ BuildManifest buildManifest;
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
+	var cakeMixFile = "build.cakemix";
+
 	// Load BuildManifest
-	if (!System.IO.File.Exists("build.cakemix"))
-		throw new ApplicationException("no cakemix manifest file found.");
-	buildManifest = DeserializeJsonFromFile<BuildManifest>("build.cakemix");
+	if (!System.IO.File.Exists(cakeMixFile))
+	{
+		Warning("No cakemix file found, creating...");
+
+		var manifest = new BuildManifest
+		{
+			NugetPackages = new string[0],
+			Tests = new string[0],
+			Benchmarks = new string[0]
+		};
+		SerializeJsonToPrettyFile(cakeMixFile, manifest);
+	}
+
+	buildManifest = DeserializeJsonFromFile<BuildManifest>(cakeMixFile);
 
 	// Clean artifacts
 	if (System.IO.Directory.Exists(artifactsFolder))
@@ -144,6 +157,12 @@ Task("__NugetPack")
 
 Task("__NugetPush")
 	.Does(() => {
+
+		if (!System.IO.Directory.Exists(packagesFolder))
+		{
+			Information("No packages to push in the packages folder");
+			return;
+		}
 
 		var packedArtifacts = System.IO.Directory.EnumerateFiles(packagesFolder);
 		foreach(var package in packedArtifacts)
