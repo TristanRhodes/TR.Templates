@@ -27,27 +27,18 @@ string versionNumber = Argument<string>("VersionOverride", null)   // Input from
 string artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
 
-var buildManifest = new BuildManifest
-{
-	NugetPackages= new[] 
-	{
-		"src/TestedLibrary/TestedLibrary.csproj"
-	},
-	Tests = new[] 
-	{
-		"test/TestedLibrary.UnitTests/TestedLibrary.UnitTests.csproj"
-	},
-	Benchmarks = new[] 
-	{
-		"test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj"
-	}
-};
+BuildManifest buildManifest;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup / Teardown
 ///////////////////////////////////////////////////////////////////////////////
 Setup(context =>
 {
+	// Load BuildManifest
+	if (!System.IO.File.Exists("build.cakemix"))
+		throw new ApplicationException("no cakemix manifest file found.");
+	buildManifest = DeserializeJsonFromFile<BuildManifest>("build.cakemix");
+
 	// Clean artifacts
 	if (System.IO.Directory.Exists(artifactsFolder))
 		System.IO.Directory.Delete(artifactsFolder, true);
