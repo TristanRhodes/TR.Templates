@@ -4,7 +4,7 @@
   "classifications": [ "DotNet Core", "Solution" ],
   "identity": "TestedLibrary",
   "name": "Tested Library Template",
-  "description": "A tested library with package publication",
+  "description": "Create a new library project with unit tests, benchmarks, cake build and release scripts and basic Github action runners.",
   "shortName": "Template.TestedLibrary",
   "tags": {
     "language": "C#",

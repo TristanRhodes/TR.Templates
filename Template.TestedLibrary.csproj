@@ -3,8 +3,8 @@
   <PropertyGroup>
     <PackageType>Template</PackageType>
     <PackageVersion>1.0</PackageVersion>
-    <PackageId>Template.TestedLibrary</PackageId>
-    <Title>Tested Library Template</Title>
+    <PackageId>TR.Templates</PackageId>
+    <Title>Tristan's Template Library</Title>
     <RepositoryUrl>https://github.com/TristanRhodes/TestedLibraryTemplate</RepositoryUrl>
     <Authors>Me</Authors>
     <Description>Create a new library project with unit tests, benchmarks, cake build and release scripts and basic Github action runners.</Description>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="template\**\*" Exclude="template\**\bin\**;template\**\obj\**" />
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
