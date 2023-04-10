@@ -44,8 +44,8 @@ Setup(context =>
 		var manifest = new BuildManifest
 		{
 			NugetPackages = new string[0],
-			Tests = new string[0],
-			Benchmarks = new string[0]
+			Tests = System.IO.Directory.GetFiles(".", "*.UnitTests.csproj", SearchOption.AllDirectories),
+			Benchmarks = System.IO.Directory.GetFiles(".", "*.Benchmark.csproj", SearchOption.AllDirectories)
 		};
 		SerializeJsonToPrettyFile(cakeMixFile, manifest);
 	}

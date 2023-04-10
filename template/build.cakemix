@@ -1,11 +1,9 @@
 {
-  "NugetPackages": [
-    "src/TestedLibrary/TestedLibrary.csproj"
-  ],
+  "NugetPackages": [],
   "Tests": [
-    "test/TestedLibrary.UnitTests/TestedLibrary.UnitTests.csproj"
+    ".\\test\\TestedLibrary.UnitTests\\TestedLibrary.UnitTests.csproj"
   ],
   "Benchmarks": [
-    "test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj"
+    ".\\test\\TestedLibrary.Benchmark\\TestedLibrary.Benchmark.csproj"
   ]
 }
