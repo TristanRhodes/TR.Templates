@@ -52,6 +52,38 @@ Task("__PackageArgsCheck")
 		if (string.IsNullOrEmpty(apiKey))
 			throw new ArgumentException("ApiKey is required");
 	});
+	
+Task("__InstallTemplate")
+	.Does(() => {
+		Information("Installing Template...");
+		var installResult = StartProcess("dotnet", @"new install ./template/ --force");
+		if (installResult != 0)
+			throw new ApplicationException($"Failed installation ({installResult})");
+	});
+	
+Task("__CreateProjectAndTest")
+	.Does(() => {
+
+		Information("Cleaning folders...");
+		if (System.IO.Directory.Exists(@"./bin/template-proj"))
+			System.IO.Directory.Delete(@"./bin/template-proj", true);
+
+		Information("Creating Template Instance...");
+		var createResult = StartProcess("dotnet", @"new Template.TestedLibrary --output ./bin/template-proj --ProjectName CakeTest");
+		if (createResult != 0)
+			throw new ApplicationException($"Failed create ({createResult})");
+			
+		// TODO: Run cake BuildAndTest instead.
+		Information("Testing...");
+		DotNetTest(@"./bin/template-proj/CakeTest.sln");
+	});
+
+Task("__UninstallTemplate")
+	.Does(() => {
+		var removeResult = StartProcess("dotnet", @"new uninstall ./template/");
+		if (removeResult != 0)
+			throw new ApplicationException($"Failed remove ({removeResult})");
+	});
 
 Task("VersionInfo")
 	.Does(() => {
@@ -65,29 +97,9 @@ Task("VersionInfo")
 	});
 
 Task("InstallAndTestTemplate")
-	.Does(() => {
-		
-		Information("Installing Template...");
-		var installResult = StartProcess("dotnet", @"new install ./template/ --force");
-		if (installResult != 0)
-			throw new ApplicationException($"Failed installation ({installResult})");
-
-		Information("Cleaning folders...");
-		if (System.IO.Directory.Exists(@"./bin/template-proj"))
-			System.IO.Directory.Delete(@"./bin/template-proj", true);
-
-		Information("Creating Template Instance...");
-		var createResult = StartProcess("dotnet", @"new Template.TestedLibrary --output ./bin/template-proj --ProjectName CakeTest");
-		if (createResult != 0)
-			throw new ApplicationException($"Failed create ({createResult})");
-			
-		Information("Testing...");
-		DotNetTest(@"./bin/template-proj/CakeTest.sln");
-
-		var removeResult = StartProcess("dotnet", @"new uninstall ./template/");
-		if (removeResult != 0)
-			throw new ApplicationException($"Failed create ({createResult})");
-	});
+	.IsDependentOn("__InstallTemplate")
+	.IsDependentOn("__CreateProjectAndTest")
+	.IsDependentOn("__UninstallTemplate");
 
 Task("PackAndPushTemplate")
 	.IsDependentOn("__PackageArgsCheck")
