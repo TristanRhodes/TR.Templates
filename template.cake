@@ -82,7 +82,7 @@ Task("__UninstallTemplate")
 	.Does(() => {
 		var removeResult = StartProcess("dotnet", @"new uninstall ./template/");
 		if (removeResult != 0)
-			throw new ApplicationException($"Failed create ({createResult})");
+			throw new ApplicationException($"Failed remove ({removeResult})");
 	});
 
 Task("VersionInfo")
