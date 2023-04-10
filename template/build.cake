@@ -1,5 +1,4 @@
-﻿#load "../template.cake"
-///////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////
 // ADDINS
 ///////////////////////////////////////////////////////////////////////////////
 #addin nuget:?package=Cake.Json&version=7.0.1
@@ -21,24 +20,27 @@ var packageSource = Argument<string>("Source", null)	  // Input from cmd args to
 
 var apiKey = Argument<string>("ApiKey", null)		      // Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
+	
+string versionNumber = Argument<string>("VersionOverride", null)   // Input from cmd args to Cake 
+	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null); // Input from GHA to Cake
 
 string artifactsFolder = "./artifacts";
-string versionNumber;
-string fullPackageName;
+var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
 
-string[] packages = new[] 
+var buildManifest = new BuildManifest
 {
-	"src/TestedLibrary/TestedLibrary.csproj"
-};
-
-string[] tests = new[] 
-{
-	"test/TestedLibrary.UnitTests/TestedLibrary.UnitTests.csproj"
-};
-
-string[] benchmarks = new[] 
-{
-	"test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj"
+	NugetPackages= new[] 
+	{
+		"src/TestedLibrary/TestedLibrary.csproj"
+	},
+	Tests = new[] 
+	{
+		"test/TestedLibrary.UnitTests/TestedLibrary.UnitTests.csproj"
+	},
+	Benchmarks = new[] 
+	{
+		"test/TestedLibrary.Benchmark/TestedLibrary.Benchmark.csproj"
+	}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -71,8 +73,10 @@ Task("__PackageArgsCheck")
 Task("__UnitTest")
 	.Does(() => {
 
-		foreach(var test in tests)
+		foreach(var test in buildManifest.Tests)
 		{
+			Information($"Testing {test}...");
+
 			var testName = System.IO.Path.GetFileNameWithoutExtension(test);
 
 			var settings = new DotNetTestSettings
@@ -94,8 +98,9 @@ Task("__UnitTest")
 Task("__Benchmark")
 	.Does(() => {
 
-		foreach(var benchmark in benchmarks)
+		foreach(var benchmark in buildManifest.Benchmarks)
 		{
+			Information($"Benchmarking {benchmark}...");
 			var benchName = System.IO.Path.GetFileNameWithoutExtension(benchmark);
 
 			var settings = new DotNetRunSettings
@@ -115,29 +120,22 @@ Task("__Benchmark")
 Task("__VersionInfo")
 	.Does(() => {
 
-		var version = GitVersion();
-		Information(SerializeJsonPretty(version));
-		versionNumber = version.SemVer;
+		if (string.IsNullOrEmpty(versionNumber))
+		{
+			var version = GitVersion();
+			Information("GitVersion Info: " + SerializeJsonPretty(version));
+			versionNumber = version.SemVer;
+		}
+
+		Information("Version Number: " + versionNumber);
 	});
 
-Task("BuildAndTest")
-	.IsDependentOn("__UnitTest");
-
-Task("BuildAndBenchmark")
-	.IsDependentOn("__Benchmark");
-
-Task("PackAndPush")
-	.IsDependentOn("__PackageArgsCheck")
-	.IsDependentOn("__VersionInfo")
-	.IsDependentOn("__UnitTest")
-	.IsDependentOn("__Benchmark")
+Task("__NugetPack")
 	.Does(() => {
 
-		var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
-
-		foreach(var package in packages)
+		foreach(var package in buildManifest.NugetPackages)
 		{
-			Information("$Packing {package}...");
+			Information($"Packing {package}...");
 			var settings = new DotNetMSBuildSettings
 			{
 				PackageVersion = versionNumber
@@ -151,7 +149,11 @@ Task("PackAndPush")
 			};
 			DotNetPack(package, packSettings);
 		}
-		
+	});
+
+Task("__NugetPush")
+	.Does(() => {
+
 		var packedArtifacts = System.IO.Directory.EnumerateFiles(packagesFolder);
 		foreach(var package in packedArtifacts)
 		{
@@ -165,8 +167,29 @@ Task("PackAndPush")
 		}
 	});
 
+Task("BuildAndTest")
+	.IsDependentOn("__UnitTest");
+
+Task("BuildAndBenchmark")
+	.IsDependentOn("__Benchmark");
+
+Task("PackAndPush")
+	.IsDependentOn("__PackageArgsCheck")
+	.IsDependentOn("__VersionInfo")
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark")
+	.IsDependentOn("__NugetPack")
+	.IsDependentOn("__NugetPush");
+
 Task("Default")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark");
 
 RunTarget(target);
+
+public class BuildManifest
+{
+	public string[] NugetPackages { get; set; }
+	public string[] Tests { get; set; }
+	public string[] Benchmarks { get; set; }
+}
