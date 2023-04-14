@@ -20,9 +20,7 @@ var packageSource = Argument<string>("Source", null)      // Input from cmd args
 var apiKey = Argument<string>("ApiKey", null)		      // Input from cmd args to Cake
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 
-var packageName = Argument<string>("PackageName", null) 
-	?? EnvironmentVariable<string>("INPUT_PACKAGENAME", null) // Input from GHA to Cake
-	?? "Template.TestedLibrary";
+var packageName = "TR.Templates";
 	
 var versionNumber = Argument<string>("VersionOverride", null)   // Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null); // Input from GHA to Cake
@@ -32,6 +30,7 @@ string fullPackageName;
 string[] templates = new [] 
 {
 	"Template.TestedLibrary",
+	"Template.DbApi",
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,9 +80,15 @@ Task("__CreateProjectAndTest")
 			if (createResult != 0)
 				throw new ApplicationException($"Failed create ({createResult})");
 			
-			// TODO: Run cake BuildAndTest instead.
 			Information("Testing...");
-			DotNetTest(@"./bin/template-proj/CakeTest.sln");
+			var settings = new ProcessSettings
+			{
+				WorkingDirectory = "./bin/template-proj/",
+				Arguments = new ProcessArgumentBuilder()
+						.Append("cake --Target=BuildAndTest")
+			};
+
+			StartProcess("dotnet", settings);
 		}
 	});
 
@@ -132,7 +137,10 @@ Task("__VersionInfo")
 			versionNumber = version.SemVer;
 		}
 
-		Information("Version Number: " + versionNumber);
+		Information("Version Number: " + versionNumber);		
+
+		fullPackageName = $"{packageName}.{versionNumber}.nupkg";
+		Information($"Full package Name: {fullPackageName}");
 	});
 
 Task("InstallAndTestTemplate")
