@@ -82,9 +82,15 @@ Task("__CreateProjectAndTest")
 			if (createResult != 0)
 				throw new ApplicationException($"Failed create ({createResult})");
 			
-			// TODO: Run cake BuildAndTest instead.
 			Information("Testing...");
-			DotNetTest(@"./bin/template-proj/CakeTest.sln");
+			var settings = new ProcessSettings
+			{
+				WorkingDirectory = "./bin/template-proj/",
+				Arguments = new ProcessArgumentBuilder()
+						.Append("cake --Target=BuildAndTest")
+			};
+
+			StartProcess("dotnet", settings);
 		}
 	});
 

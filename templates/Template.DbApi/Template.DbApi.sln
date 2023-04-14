@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.DbApi.UnitTests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.DbApi.AcceptanceTests", "test\Template.DbApi.AcceptanceTests\Template.DbApi.AcceptanceTests.csproj", "{B0B61E2F-1395-495D-BF82-7F7FFE91BBC6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.DbApi.Benchmark", "test\Template.DbApi.Benchmark\Template.DbApi.Benchmark.csproj", "{8026E453-ED3D-467C-930D-53D189EC6CD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{B0B61E2F-1395-495D-BF82-7F7FFE91BBC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0B61E2F-1395-495D-BF82-7F7FFE91BBC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0B61E2F-1395-495D-BF82-7F7FFE91BBC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8026E453-ED3D-467C-930D-53D189EC6CD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8026E453-ED3D-467C-930D-53D189EC6CD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8026E453-ED3D-467C-930D-53D189EC6CD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8026E453-ED3D-467C-930D-53D189EC6CD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,6 +71,7 @@ Global
 		{9E50A0DC-5C52-4556-B2AE-D9421F9F4F29} = {6F7D680F-991C-4E30-B835-E2AF3A558390}
 		{EB6D2A08-EC3D-4BF8-9EC0-DF8EED0CF329} = {391B01B0-22D7-4B3D-BB61-F4263AFAA4E2}
 		{B0B61E2F-1395-495D-BF82-7F7FFE91BBC6} = {391B01B0-22D7-4B3D-BB61-F4263AFAA4E2}
+		{8026E453-ED3D-467C-930D-53D189EC6CD5} = {391B01B0-22D7-4B3D-BB61-F4263AFAA4E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CAD81B82-8E39-4E88-9AB6-DD38786C5FD1}
