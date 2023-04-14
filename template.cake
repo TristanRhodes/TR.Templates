@@ -32,6 +32,7 @@ string fullPackageName;
 string[] templates = new [] 
 {
 	"Template.TestedLibrary",
+	"Template.DbApi",
 };
 
 ///////////////////////////////////////////////////////////////////////////////

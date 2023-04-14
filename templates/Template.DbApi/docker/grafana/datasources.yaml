@@ -1,0 +1,8 @@
+apiVersion: 1
+
+datasources:
+
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://Template.DbApi.Prometheus:9090
