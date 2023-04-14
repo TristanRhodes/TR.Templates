@@ -9,24 +9,5 @@ Scenario: API Healthcheck
 	Then The response should be 200 OK
 	When We call the metrics endpoint
 	Then The response should be 200 OK
-
-@healthcheck @simulator
-Scenario: Simulator healthcheck
-	Given We have a Simulator api
-	When We call the ping endpoint
+	When We call the swagger endpoint
 	Then The response should be 200 OK
-	When We call the healthcheck endpoint
-	Then The response should be 200 OK
-	When We call the metrics endpoint
-	Then The response should be 200 OK
-
-@healthcheck @consumer
-Scenario: Consumer healthcheck
-	Given We have a Consumer api
-	When We call the ping endpoint
-	Then The response should be 200 OK
-	When We call the healthcheck endpoint
-	Then The response should be 200 OK
-	When We call the metrics endpoint
-	Then The response should be 200 OK
-

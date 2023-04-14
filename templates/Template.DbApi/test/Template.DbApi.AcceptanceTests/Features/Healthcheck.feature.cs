@@ -31,7 +31,7 @@ namespace Template.DbApi.AcceptanceTests.Features
 #line 1 "Healthcheck.feature"
 #line hidden
         
-        public HealthchecksFeature(HealthchecksFeature.FixtureData fixtureData, Template.DbApi_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
+        public HealthchecksFeature(HealthchecksFeature.FixtureData fixtureData, Template_DbApi_AcceptanceTests_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
         {
             this._testOutputHelper = testOutputHelper;
             this.TestInitialize();

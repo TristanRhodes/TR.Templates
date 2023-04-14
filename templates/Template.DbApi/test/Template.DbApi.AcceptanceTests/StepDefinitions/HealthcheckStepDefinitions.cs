@@ -17,18 +17,6 @@ public sealed class HealthcheckStepDefinitions
         _featureContext["Uri"] = "http://localhost:5160/";
     }
 
-    [Given("We have a Simulator api")]
-    public void WhenTheTwoNumbersAreAdded()
-    {
-        _featureContext["Uri"] = "http://localhost:5284/";
-    }
-
-    [Given("We have a Consumer api")]
-    public void ThenTheResultShouldBe()
-    {
-        _featureContext["Uri"] = "http://localhost:5159/";
-    }
-
     [When("We call the healthcheck endpoint")]
     public async Task WeCallTheHealthcheckEndpoint()
     {
@@ -49,6 +37,14 @@ public sealed class HealthcheckStepDefinitions
     public async Task WeCallTheMetricsEndpoint()
     {
         var fullUrl = Path.Combine((string)_featureContext["Uri"], "_system/metrics");
+        using var client = new HttpClient();
+        _featureContext["Result"] = await client.GetAsync(fullUrl);
+    }
+
+    [When("We call the swagger endpoint")]
+    public async Task WeCallTheSwaggerEndpoint()
+    {
+        var fullUrl = Path.Combine((string)_featureContext["Uri"], "swagger/v1/swagger.json");
         using var client = new HttpClient();
         _featureContext["Result"] = await client.GetAsync(fullUrl);
     }
