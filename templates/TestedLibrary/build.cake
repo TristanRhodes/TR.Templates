@@ -21,7 +21,7 @@ var packageSource = Argument<string>("Source", null)	  // Input from cmd args to
 var apiKey = Argument<string>("ApiKey", null)		      // Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
 	
-string versionNumber = Argument<string>("VersionOverride", null)   // Input from cmd args to Cake 
+var versionNumber = Argument<string>("VersionOverride", null)   // Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null); // Input from GHA to Cake
 
 string artifactsFolder = "./artifacts";
