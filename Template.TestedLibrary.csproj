@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\**\tools\**" />
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\**\tools\**;templates\**\_NCrunch_*\**" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
