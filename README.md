@@ -31,7 +31,7 @@ Setup package feed:
 `dotnet nuget add source https://www.myget.org/F/tr-public/api/v3/index.json --name TR.Packages`
 
 Install Template Package:
-`dotnet new install Template.TestedLibrary --nuget-source TR.Packages --force`
+`dotnet new install TR.Templates --nuget-source TR.Packages --force`
 
 Create new project:
 `dotnet new Template.TestedLibrary --ProjectName={MyProjectName}`
