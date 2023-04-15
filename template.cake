@@ -113,7 +113,7 @@ Task("__PackTemplates")
 			OutputDirectory = "./artifacts/",
 			MSBuildSettings = settings
 		};
-		DotNetPack("Template.TestedLibrary.csproj", packSettings);
+		DotNetPack("TR.Templates.csproj", packSettings);
 	});
 
 Task("__PushTemplatePack")
