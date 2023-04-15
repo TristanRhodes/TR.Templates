@@ -1,0 +1,9 @@
+{
+  "NugetPackages": [],
+  "Tests": [
+    ".\\test\\Template.DbApi.UnitTests\\Template.DbApi.UnitTests.csproj"
+  ],
+  "Benchmarks": [
+    ".\\test\\Template.DbApi.Benchmark\\Template.DbApi.Benchmark.csproj"
+  ]
+}
