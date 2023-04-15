@@ -5,7 +5,7 @@
     <PackageVersion>1.0</PackageVersion>
     <PackageId>TR.Templates</PackageId>
     <Title>Tristan's Template Library</Title>
-    <RepositoryUrl>https://github.com/TristanRhodes/TestedLibraryTemplate</RepositoryUrl>
+    <RepositoryUrl>https://github.com/TristanRhodes/TR.Templates</RepositoryUrl>
     <Authors>Me</Authors>
     <Description>Create a new library project with unit tests, benchmarks, cake build and release scripts and basic Github action runners.</Description>
     <PackageTags>dotnet-new;templates</PackageTags>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\**\tools\**" />
+    <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\**\tools\**;templates\**\_NCrunch_*\**" />
     <Compile Remove="**\*" />
   </ItemGroup>
 
