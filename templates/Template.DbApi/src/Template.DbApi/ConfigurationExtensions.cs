@@ -7,6 +7,7 @@ using static Dapper.SqlMapper;
 using Microsoft.Extensions.Options;
 using Template.DbApi.Model;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Template.DbApi;
 public static class ConfigurationExtensions
@@ -14,10 +15,16 @@ public static class ConfigurationExtensions
     public static IApplicationBuilder UseHttpsRedirectionExcluding(this IApplicationBuilder builder, string excluding)
     {
         builder.UseWhen(
-            context => !context.Request.Path.StartsWithSegments("/_system/metrics"),
+            context => !context.Request.Path.StartsWithSegments(excluding),
             builder => builder.UseHttpsRedirection());
 
         return builder;
+    }
+
+    public static IServiceCollection WithMediatr(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(ConfigurationExtensions)));
+        return services;
     }
 
     public static IServiceCollection WithPostgres(this IServiceCollection services, IConfiguration configuration)
@@ -25,9 +32,6 @@ public static class ConfigurationExtensions
         var section = configuration.GetSection("Postgres:WriteConnection").Value;
         services.AddSingleton<IConnectionFactory>(new PostgresConnectionFactory(section));
         
-        // Add Storage Services
-        services.AddSingleton<IItemStore, ItemStore>();
-
         return services;
     }
 
