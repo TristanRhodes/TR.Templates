@@ -12,7 +12,7 @@ public sealed class HealthcheckStepDefinitions
     }
 
     [Given("We have a Application api")]
-    public void GivenTheSecondNumberIs()
+    public void WeHaveAnApplicationApi()
     {
         _featureContext["Uri"] = "http://localhost:5160/";
     }
