@@ -15,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.WithSerilog(builder.Configuration, "Template.DbApi API");
 builder.Services.WithPostgres(builder.Configuration);
+builder.Services.WithMediatr();
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
@@ -26,7 +27,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirectionExcluding("/_system/metrics");
+app.UseHttpsRedirectionExcluding("/_system");
 
 // https://github.com/prometheus-net/prometheus-net
 
