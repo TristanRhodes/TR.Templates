@@ -16,14 +16,27 @@ var target = Argument("target", "Default");
 
 var configuration = Argument("configuration", "Release");
 
-var packageSource = Argument<string>("Source", null)	  // Input from cmd args to Cake 
-	?? EnvironmentVariable<string>("INPUT_SOURCE", null); // Input from GHA to Cake
+var nugetPackageSource = Argument<string>("Source", null)			// Input from cmd args to Cake 
+	?? EnvironmentVariable<string>("INPUT_SOURCE", null);			// Input from GHA to Cake
 
-var apiKey = Argument<string>("ApiKey", null)		      // Input from cmd args to Cake 
-	?? EnvironmentVariable<string>("INPUT_APIKEY", null); // Input from GHA to Cake
+var nugetApiKey = Argument<string>("ApiKey", null)					// Input from cmd args to Cake 
+	?? EnvironmentVariable<string>("INPUT_APIKEY", null);			// Input from GHA to Cake
 	
-string versionNumber = Argument<string>("VersionOverride", null)   // Input from cmd args to Cake 
-	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null); // Input from GHA to Cake
+var versionNumber = Argument<string>("VersionOverride", null)		// Input from cmd args to Cake 
+	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null);	// Input from GHA to Cake
+
+var containerRegistryToken = 
+	Argument<string>("ContainerRegistryToken", null) ?? 
+	EnvironmentVariable<string>("INPUT_CONTAINER_REGISTRY_TOKEN", null);
+
+var containerRegistryUserName = 
+	Argument<string>("ContainerRegistryUserName", null) ?? 
+	EnvironmentVariable<string>("CONTAINER_REGISTRY_USERNAME", null);
+
+var containerRegistry = 
+	Argument<string>("ContainerRegistry", null) ?? 
+	EnvironmentVariable<string>("CONTAINER_REGISTRY", null);
+
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
@@ -67,13 +80,25 @@ Teardown(context =>
 ///////////////////////////////////////////////////////////////////////////////
 // Tasks
 ///////////////////////////////////////////////////////////////////////////////
-Task("__PackageArgsCheck")
+Task("__NugetArgsCheck")
 	.Does(() => {
-		if (string.IsNullOrEmpty(packageSource))
-			throw new ArgumentException("Source is required");
+		if (string.IsNullOrEmpty(nugetPackageSource))
+			throw new ArgumentException("NugetPackageSource is required");
 
-		if (string.IsNullOrEmpty(apiKey))
-			throw new ArgumentException("ApiKey is required");
+		if (string.IsNullOrEmpty(nugetApiKey))
+			throw new ArgumentException("NugetApiKey is required");
+	});
+
+Task("__ContainerArgsCheck")
+	.Does(() => {
+		if (string.IsNullOrEmpty(containerRegistryToken))
+			throw new ArgumentException("ContainerRegistryToken is required");
+			
+		if (string.IsNullOrEmpty(containerRegistryUserName))
+			throw new ArgumentException("ContainerRegistryUserName is required");
+			
+		if (string.IsNullOrEmpty(containerRegistry))
+			throw new ArgumentException("ContainerRegistry is required");
 	});
 
 Task("__UnitTest")
@@ -172,8 +197,8 @@ Task("__NugetPush")
 			Information($"Pushing {package}...");
 			var pushSettings = new DotNetNuGetPushSettings
 			{
-				Source = packageSource,
-				ApiKey = apiKey
+				Source = nugetPackageSource,
+				ApiKey = nugetApiKey
 			};
 			DotNetNuGetPush(package, pushSettings);
 		}
@@ -181,13 +206,15 @@ Task("__NugetPush")
 
 Task("__DockerLogin")
 	.Does(() => {
+		
+
 		var loginSettings = new DockerRegistryLoginSettings
 		{ 
-			Password = EnvironmentVariable("REGISTRY_TOKEN") , 
-			Username= "USERNAME"
+			Password = containerRegistryToken, 
+			Username = containerRegistryUserName
 		};
 
-		DockerLogin(loginSettings, EnvironmentVariable("CONTAINER_REGISTRY"));  
+		DockerLogin(loginSettings, containerRegistry);  
 	});
 
 Task("__DockerPack")
@@ -197,7 +224,7 @@ Task("__DockerPack")
 		foreach(var package in buildManifest.DockerPackages)
 		{
 			Information($"Packing Docker: {package}...");
-			var directoryName = System.IO.Path.GetDirectoryName(".\\src\\Template.DbApi.Api\\Dockerfile");
+			var directoryName = System.IO.Path.GetDirectoryName(package);
 			var parts = directoryName.Split(System.IO.Path.DirectorySeparatorChar);
 			var packageName = parts.Last().ToLower();
 
@@ -227,12 +254,18 @@ Task("BuildAndBenchmark")
 	.IsDependentOn("__Benchmark");
 
 Task("PackAndPush")
-	.IsDependentOn("__PackageArgsCheck")
+	.IsDependentOn("__NugetArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark")
 	.IsDependentOn("__NugetPack")
 	.IsDependentOn("__NugetPush");
+
+Task("DockerPackAndPush")
+	.IsDependentOn("__ContainerArgsCheck")
+	.IsDependentOn("__DockerLogin")
+	.IsDependentOn("__DockerPack")
+	.IsDependentOn("__DockerPush");
 
 Task("Default")
 	.IsDependentOn("__UnitTest")
