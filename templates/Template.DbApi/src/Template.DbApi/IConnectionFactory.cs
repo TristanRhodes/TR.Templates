@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
@@ -9,9 +10,9 @@ using System.Threading.Tasks;
 namespace Template.DbApi;
 public interface IConnectionFactory
 {
-    DbConnection CreateWriteConnection();
+    IDbConnection CreateWriteConnection();
 
-    DbConnection CreateReadConnection();
+    IDbConnection CreateReadConnection();
 }
 
 public class PostgresConnectionFactory : IConnectionFactory
@@ -25,6 +26,6 @@ public class PostgresConnectionFactory : IConnectionFactory
         _readConnectionString = readConnectionString;
     }
 
-    public DbConnection CreateWriteConnection() => new NpgsqlConnection(_writeConnectionString);
-    public DbConnection CreateReadConnection() => new NpgsqlConnection(_readConnectionString);
+    public IDbConnection CreateWriteConnection() => new NpgsqlConnection(_writeConnectionString);
+    public IDbConnection CreateReadConnection() => new NpgsqlConnection(_readConnectionString);
 }

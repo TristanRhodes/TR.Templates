@@ -58,7 +58,7 @@ public class InsertTodoValidatorTests
     }
 
     [Fact]
-    public void DescriptionCannotBeOver125()
+    public void DescriptionCannotBeOver512()
     {
         var longString = new string('a', 513);
         var args = new InsertTodo("Title", longString, DateTime.UtcNow.Date.AddDays(1));
