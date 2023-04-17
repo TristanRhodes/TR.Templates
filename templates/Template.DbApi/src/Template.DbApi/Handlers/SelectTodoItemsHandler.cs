@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Template.DbApi.Model;
 
-namespace Template.DbApi.Model;
+namespace Template.DbApi.Handlers;
 internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<TodoRecord>>
 {
     private readonly IConnectionFactory _connectionFactory;
@@ -21,7 +22,7 @@ internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<
     {
         using var conn = _connectionFactory.CreateReadConnection();
 
-        var items = await conn.QueryAsync("SELECT * FROM todo_list WHERE open = true;");
+        var items = await conn.QueryAsync("SELECT item_id, title, description, due_date, open, closed_date FROM todo_list WHERE open = true;");
 
         // NOTE: This will require pagination to scale.
         return items

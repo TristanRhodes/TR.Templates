@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Template.DbApi.Model;
 using MediatR;
 using System.Collections.Generic;
+using Template.DbApi.Handlers;
 
 namespace Template.DbApi.Api.Controllers
 {
@@ -32,7 +33,6 @@ namespace Template.DbApi.Api.Controllers
         public async Task<IActionResult> InsertItem(InsertTodo insert)
         {
             var result = await _mediator.Send(insert);
-
             return Ok(result);
         }
     }
