@@ -9,17 +9,22 @@ using System.Threading.Tasks;
 namespace Template.DbApi;
 public interface IConnectionFactory
 {
-    DbConnection CreateConnection();
+    DbConnection CreateWriteConnection();
+
+    DbConnection CreateReadConnection();
 }
 
 public class PostgresConnectionFactory : IConnectionFactory
 {
-    private string _connectionString;
+    private readonly string _writeConnectionString;
+    private readonly string _readConnectionString;
 
-    public PostgresConnectionFactory(string connectionString)
+    public PostgresConnectionFactory(string writeConnectionString, string readConnectionString)
     {
-        _connectionString = connectionString;
+        _writeConnectionString = writeConnectionString;
+        _readConnectionString = readConnectionString;
     }
 
-    public DbConnection CreateConnection() => new NpgsqlConnection(_connectionString);
+    public DbConnection CreateWriteConnection() => new NpgsqlConnection(_writeConnectionString);
+    public DbConnection CreateReadConnection() => new NpgsqlConnection(_readConnectionString);
 }

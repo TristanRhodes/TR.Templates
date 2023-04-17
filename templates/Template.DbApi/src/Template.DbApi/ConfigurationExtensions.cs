@@ -29,8 +29,9 @@ public static class ConfigurationExtensions
 
     public static IServiceCollection WithPostgres(this IServiceCollection services, IConfiguration configuration)
     {
-        var section = configuration.GetSection("Postgres:WriteConnection").Value;
-        services.AddSingleton<IConnectionFactory>(new PostgresConnectionFactory(section));
+        var writeConn = configuration.GetSection("Postgres:WriteConnection").Value;
+        var readConn = configuration.GetSection("Postgres:ReadConnection").Value;
+        services.AddSingleton<IConnectionFactory>(new PostgresConnectionFactory(writeConn, readConn));
         
         return services;
     }

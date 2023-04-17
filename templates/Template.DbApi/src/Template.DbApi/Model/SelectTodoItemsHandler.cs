@@ -19,7 +19,7 @@ internal class SelectTodoItemsHandler : IRequestHandler<SelectTodo, IEnumerable<
 
     public async Task<IEnumerable<TodoRecord>> Handle(SelectTodo request, CancellationToken cancellationToken)
     {
-        using var conn = _connectionFactory.CreateConnection();
+        using var conn = _connectionFactory.CreateReadConnection();
 
         var items = await conn.QueryAsync("SELECT * FROM todo_list WHERE open = true;");
 
