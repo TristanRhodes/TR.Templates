@@ -17,6 +17,15 @@ This is a work in progress.
 
 TODO: Token generation, storage and injection into GHA.
 
+## To Use as local template
+
+Install: `dotnet new install ./templates/ --force`
+
+Create New Tested Library Project: `dotnet new Template.TestedLibrary --ProjectName={ProjectName}`
+Create New DbApi Project: `dotnet new Template.DbApi --ProjectName={ProjectName}`
+
+Uninstall: `dotnet new uninstall ./templates/`
+
 ## To build and test project
 Run: `dotnet cake template.cake --Target=InstallAndTestTemplate`
 
