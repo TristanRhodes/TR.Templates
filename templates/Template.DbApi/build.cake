@@ -24,6 +24,10 @@ var nugetApiKey = Argument<string>("ApiKey", null)					// Input from cmd args to
 	
 var versionNumber = Argument<string>("VersionOverride", null)		// Input from cmd args to Cake 
 	?? EnvironmentVariable<string>("INPUT_VERSIONOVERRIDE", null);	// Input from GHA to Cake
+	
+var containerRegistry = 
+	Argument<string>("ContainerRegistry", null) ?? 
+	EnvironmentVariable<string>("INPUT_CONTAINER_REGISTRY", null);
 
 var containerRegistryToken = 
 	Argument<string>("ContainerRegistryToken", null) ?? 
@@ -31,12 +35,7 @@ var containerRegistryToken =
 
 var containerRegistryUserName = 
 	Argument<string>("ContainerRegistryUserName", null) ?? 
-	EnvironmentVariable<string>("CONTAINER_REGISTRY_USERNAME", null);
-
-var containerRegistry = 
-	Argument<string>("ContainerRegistry", null) ?? 
-	EnvironmentVariable<string>("CONTAINER_REGISTRY", null);
-
+	EnvironmentVariable<string>("INPUT_CONTAINER_REGISTRY_USERNAME", null);
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
@@ -207,6 +206,7 @@ Task("__NugetPush")
 Task("__DockerLogin")
 	.Does(() => {
 		
+		Information($"Logging into registry: {containerRegistry}...");
 
 		var loginSettings = new DockerRegistryLoginSettings
 		{ 
@@ -227,10 +227,12 @@ Task("__DockerPack")
 			var directoryName = System.IO.Path.GetDirectoryName(package);
 			var parts = directoryName.Split(System.IO.Path.DirectorySeparatorChar);
 			var packageName = parts.Last().ToLower();
-
+			packageName = $"{containerRegistry}/{packageName}".ToLower();	
+			
+			Information($"Packing: {packageName}...");
 			var settings = new DockerImageBuildSettings
 				{
-					Tag = new[] {$"{packageName}:{versionNumber}" },
+					Tag = new[] { $"{packageName}:{versionNumber}" },
 					File = package
 				};
 
@@ -243,7 +245,21 @@ Task("__DockerPush")
 
 		foreach(var package in buildManifest.DockerPackages)
 		{
-			throw new NotImplementedException();
+			Information($"Pushing Docker: {package}...");
+			var directoryName = System.IO.Path.GetDirectoryName(package);
+			var parts = directoryName.Split(System.IO.Path.DirectorySeparatorChar);
+			var packageName = parts.Last().ToLower();
+			packageName = $"{containerRegistry}/{packageName}".ToLower();	
+			var fullPackageName = $"{packageName}:{versionNumber}";
+
+			var settings = new DockerImagePushSettings
+			{ 
+				AllTags = true 
+			};
+		
+			Information($"Pushing: {packageName}...");
+
+			DockerPush(settings, $"{packageName}");
 		}
 	});
 
