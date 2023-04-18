@@ -1,6 +1,6 @@
 
-name: Build and Test Template
-run-name: Build and Test Project Template
+name: Build and Test Solution
+run-name: Build and Test Solution
 
 on:
   pull_request:

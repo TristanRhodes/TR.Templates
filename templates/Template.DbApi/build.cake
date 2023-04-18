@@ -269,7 +269,7 @@ Task("BuildAndTest")
 Task("BuildAndBenchmark")
 	.IsDependentOn("__Benchmark");
 
-Task("PackAndPush")
+Task("NugetPackAndPush")
 	.IsDependentOn("__NugetArgsCheck")
 	.IsDependentOn("__VersionInfo")
 	.IsDependentOn("__UnitTest")

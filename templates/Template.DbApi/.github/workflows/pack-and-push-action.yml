@@ -1,6 +1,6 @@
 
-name: Pack and Push
-run-name: Pack and push project
+name: Pack and Push Solution
+run-name: Pack and Push Solution
 
 on:
   push:
@@ -23,9 +23,9 @@ jobs:
           target: FullPackAndPush
           ApiKey: ${{ secrets.NUGET_APIKEY }}
           Source: ${{ vars.NUGET_SOURCE }}
-          ContainerRegistry: ${{ secrets.CONTAINER_REGISTRY }}
-          ContainerRegistryToken: ${{ vars.CONTAINER_REGISTRY_TOKEN }}
-          ContainerRegistryUserName: ${{ vars.INPUT_CONTAINER_REGISTRY_USERNAME }}
+          ContainerRegistry: ${{ vars.CONTAINER_REGISTRY }}
+          ContainerRegistryToken: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          ContainerRegistryUserName: ${{ vars.CONTAINER_REGISTRY_USERNAME }}
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v3
