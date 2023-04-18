@@ -1,5 +1,9 @@
 {
   "NugetPackages": [],
+  "DockerPackages": [
+    ".\\src\\Template.DbApi.Api\\Dockerfile",
+    ".\\src\\Template.DbApi.DbUp\\Dockerfile"
+  ],
   "Tests": [
     ".\\test\\Template.DbApi.UnitTests\\Template.DbApi.UnitTests.csproj"
   ],
