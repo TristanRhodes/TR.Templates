@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <PackageType>Template</PackageType>
@@ -13,11 +13,16 @@
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="templates\**\*" Exclude="templates\**\bin\**;templates\**\obj\**;templates\**\tools\**;templates\**\_NCrunch_*\**" />
     <Compile Remove="**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="artifacts\" />
   </ItemGroup>
 
 </Project>
