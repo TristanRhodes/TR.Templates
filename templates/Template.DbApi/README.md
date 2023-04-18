@@ -12,6 +12,17 @@ This project contains a postgres DB, an API, and a DB up project to handle DB mi
 * Unit Tests, Acceptance Tests and Benchmarks with packaged reports.
 * Export swagger defintions.
 
+## To Use as local template
+
+From local project root.
+
+Install: `dotnet new install . --force`
+
+Create New: `dotnet new Template.DbApi --ProjectName={ProjectName}`
+
+Uninstall: `dotnet new uninstall .`
+
+
 ### To Run
 Run docker-compose project in VS
 

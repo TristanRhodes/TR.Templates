@@ -26,7 +26,7 @@ Run: `dotnet cake template.cake --Target=PackAndPushTemplate --Source={Source} -
 ## Package Feed:
 Packages currently publish to my personal feed by default: https://www.myget.org/F/tr-public/api/v3/index.json
 
-## Install and Create New Project
+## Install and Create New Project From MyGet
 Setup package feed:
 `dotnet nuget add source https://www.myget.org/F/tr-public/api/v3/index.json --name TR.Packages`
 
