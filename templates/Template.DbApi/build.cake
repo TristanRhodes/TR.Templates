@@ -27,15 +27,15 @@ var versionNumber = Argument<string>("VersionOverride", null)		// Input from cmd
 	
 var containerRegistry = 
 	Argument<string>("ContainerRegistry", null) ?? 
-	EnvironmentVariable<string>("INPUT_CONTAINER_REGISTRY", null);
+	EnvironmentVariable<string>("INPUT_CONTAINERREGISTRY", null);
 
 var containerRegistryToken = 
 	Argument<string>("ContainerRegistryToken", null) ?? 
-	EnvironmentVariable<string>("INPUT_CONTAINER_REGISTRY_TOKEN", null);
+	EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYTOKEN", null);
 
 var containerRegistryUserName = 
 	Argument<string>("ContainerRegistryUserName", null) ?? 
-	EnvironmentVariable<string>("INPUT_CONTAINER_REGISTRY_USERNAME", null);
+	EnvironmentVariable<string>("INPUT_CONTAINERREGISTRYUSERNAME", null);
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
@@ -281,6 +281,18 @@ Task("DockerPackAndPush")
 	.IsDependentOn("__ContainerArgsCheck")
 	.IsDependentOn("__DockerLogin")
 	.IsDependentOn("__DockerPack")
+	.IsDependentOn("__DockerPush");
+
+Task("FullPackAndPush")
+	.IsDependentOn("__NugetArgsCheck")
+	.IsDependentOn("__ContainerArgsCheck")
+	.IsDependentOn("__VersionInfo")
+	.IsDependentOn("__UnitTest")
+	.IsDependentOn("__Benchmark")
+	.IsDependentOn("__NugetPack")
+	.IsDependentOn("__DockerLogin")
+	.IsDependentOn("__DockerPack")
+	.IsDependentOn("__NugetPush")
 	.IsDependentOn("__DockerPush");
 
 Task("Default")
