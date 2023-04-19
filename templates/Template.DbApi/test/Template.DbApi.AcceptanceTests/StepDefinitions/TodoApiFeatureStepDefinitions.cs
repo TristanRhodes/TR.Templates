@@ -64,7 +64,7 @@ public sealed class TodoApiFeatureStepDefinitions
     }
 
     [Then("The result contains the created recordId")]
-    public async Task WeCallThePingEndpoint()
+    public void TheResultsContainsTheCreatedItemId()
     {
         var item = _todoListTestContext.NewTodoItem;
         var id = item.itemId;
