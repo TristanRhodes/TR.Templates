@@ -3,61 +3,72 @@ using Newtonsoft.Json.Linq;
 using System.ComponentModel;
 using System.Net.Http.Json;
 using TechTalk.SpecFlow.CommonModels;
+using Template.DbApi.AcceptanceTests;
 
 namespace SpecFlowProject1.StepDefinitions;
 
 [Binding]
 public sealed class TodoApiFeatureStepDefinitions
 {
-    // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
+    private readonly CoreTestContext _testContext;
+    private readonly TodoListTestContext _todoListTestContext;
 
-    private readonly FeatureContext _featureContext;
-    public TodoApiFeatureStepDefinitions(FeatureContext featureContext) // use it as ctor parameter
+    public TodoApiFeatureStepDefinitions(
+        CoreTestContext testContext, 
+        TodoListTestContext todoListTestContext)
     {
-        _featureContext = featureContext;
+        _testContext = testContext;
+        _todoListTestContext = todoListTestContext;
     }
 
     [When("We create task '(.*)'")]
     public async Task WeCreateATodoItem(string text)
     {
-        var fullUrl = Path.Combine((string)_featureContext["Uri"], "TodoList");
-        using var client = new HttpClient();
         var payload = new
         {
             Title = text,
             Description = text,
             DueDate = DateTime.Today
         };
-        var result = await client.PostAsJsonAsync(fullUrl, payload);
 
-        var json = await result.Content.ReadAsStringAsync();
-        _featureContext["NewTask"] = JsonConvert.DeserializeObject<dynamic>(json);
-        _featureContext["Result"] = result;
+        await _testContext.PostAsJsonAsync("TodoList", payload);
+    }
+
+    [Then("The response should contain a new RecordId")]
+    public async Task TheResponseShouldContainANewRecordId()
+    {
+        var json = await _testContext.Response.Content.ReadAsStringAsync();
+        _todoListTestContext.NewTodoItem = JsonConvert.DeserializeObject<dynamic>(json);
+
+        ((string)_todoListTestContext.NewTodoItem
+            .itemId.Value)
+            .Should().NotBeNull();
     }
 
     [When("We get our TodoList")]
     public async Task WeGetOurTodoList()
     {
-        var fullUrl = Path.Combine((string)_featureContext["Uri"], "TodoList");
-        using var client = new HttpClient();
+        await _testContext.GetAsync("TodoList");
+    }
 
-        var result = await client.GetAsync(fullUrl);
-
-        var json = await result.Content.ReadAsStringAsync();
-        _featureContext["TaskList"] = JsonConvert.DeserializeObject<dynamic>(json);
-        _featureContext["Result"] = result;
-
+    [Then("The response should contain a Todo List")]
+    public async Task TheResponseShouldContainATodoList()
+    {
+        var json = await _testContext.Response.Content.ReadAsStringAsync();
+        _todoListTestContext.TaskList = ((JArray)JsonConvert.DeserializeObject<dynamic>(json))
+            .Select(j => (dynamic)j)
+            .ToList();
     }
 
     [Then("The result contains the created recordId")]
-    public async Task WeCallThePingEndpoint()
+    public void TheResultsContainsTheCreatedItemId()
     {
-        var item = (dynamic)_featureContext["NewTask"];
+        var item = _todoListTestContext.NewTodoItem;
         var id = item.itemId;
 
-        var match = ((JArray)_featureContext["TaskList"])
-            .SingleOrDefault(i => i["itemId"] == id);
+        var match = _todoListTestContext.TaskList
+            .SingleOrDefault(i => i.itemId == id);
 
-        match.Should().NotBeNull();
+        ((object)match).Should().NotBeNull();
     }
 }

@@ -4,7 +4,15 @@
     ".\\src\\Template.DbApi.Api\\Dockerfile",
     ".\\src\\Template.DbApi.DbUp\\Dockerfile"
   ],
-  "Tests": [
+  "DockerComposeFiles": [
+    ".\\docker-compose.yml",
+    ".\\docker-compose.infra.yml",
+    ".\\docker-compose.override.yml"
+  ],
+  "AcceptanceTests": [
+    ".\\test\\Template.DbApi.AcceptanceTests\\Template.DbApi.AcceptanceTests.csproj"
+  ],
+  "UnitTests": [
     ".\\test\\Template.DbApi.UnitTests\\Template.DbApi.UnitTests.csproj"
   ],
   "Benchmarks": [

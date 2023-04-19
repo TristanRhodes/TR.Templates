@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{BB8C3CB1-DAB0-44B8-93C4-00DD38CA96BB}"
 	ProjectSection(SolutionItems) = preProject
 		build.cake = build.cake
+		build.cakemix = build.cakemix
 		README.md = README.md
 	EndProjectSection
 EndProject

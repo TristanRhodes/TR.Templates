@@ -57,8 +57,10 @@ Setup(context =>
 		var manifest = new BuildManifest
 		{
 			NugetPackages = new string[0],
+			DockerComposeFiles = System.IO.Directory.GetFiles(".", "docker-compose*.yml"),
 			DockerPackages = System.IO.Directory.GetFiles(".\\src\\", "Dockerfile", SearchOption.AllDirectories),
-			Tests = System.IO.Directory.GetFiles(".", "*.UnitTests.csproj", SearchOption.AllDirectories),
+			UnitTests = System.IO.Directory.GetFiles(".", "*.UnitTests.csproj", SearchOption.AllDirectories),
+			AcceptanceTests = System.IO.Directory.GetFiles(".", "*.AcceptanceTests.csproj", SearchOption.AllDirectories),
 			Benchmarks = System.IO.Directory.GetFiles(".", "*.Benchmark.csproj", SearchOption.AllDirectories),
 		};
 		SerializeJsonToPrettyFile(cakeMixFile, manifest);
@@ -103,7 +105,7 @@ Task("__ContainerArgsCheck")
 Task("__UnitTest")
 	.Does(() => {
 
-		foreach(var test in buildManifest.Tests)
+		foreach(var test in buildManifest.UnitTests)
 		{
 			Information($"Testing {test}...");
 
@@ -113,6 +115,46 @@ Task("__UnitTest")
 			{
 				Configuration = configuration,
 				ResultsDirectory = artifactsFolder
+			};
+
+			// Console log for build agent
+			settings.Loggers.Add("console;verbosity=normal");
+		
+			// Logging for trx test report artifact
+			settings.Loggers.Add($"trx;logfilename={testName}.trx");
+
+			DotNetTest(test, settings);
+		}
+	});
+
+Task("__DockerComposeUp")
+	.Does(() => {
+
+		var settings = new DockerComposeUpSettings 
+		{
+			Files = buildManifest.DockerComposeFiles,
+			DetachedMode = true
+		};
+		DockerComposeUp(settings);
+	});
+
+Task("__AcceptanceTest")
+	.IsDependentOn("__DockerComposeUp")
+	.Does(() => {
+
+		foreach(var test in buildManifest.AcceptanceTests)
+		{
+			Information($"Acceptance Testing {test}...");
+
+			var testName = System.IO.Path.GetFileNameWithoutExtension(test);
+
+			var settings = new DotNetTestSettings
+			{
+				Configuration = configuration,
+				ResultsDirectory = artifactsFolder,
+				EnvironmentVariables = new Dictionary<string, string> {
+					{ "env", "ci" }
+				}
 			};
 
 			// Console log for build agent
@@ -266,6 +308,9 @@ Task("__DockerPush")
 Task("BuildAndTest")
 	.IsDependentOn("__UnitTest");
 
+Task("BuildAndAcceptanceTest")
+	.IsDependentOn("__AcceptanceTest");
+
 Task("BuildAndBenchmark")
 	.IsDependentOn("__Benchmark");
 
@@ -311,6 +356,8 @@ public class BuildManifest
 {
 	public string[] NugetPackages { get; set; }
 	public string[] DockerPackages { get; set; }
-	public string[] Tests { get; set; }
+	public string[] DockerComposeFiles { get; set; }
+	public string[] AcceptanceTests { get; set; }
+	public string[] UnitTests { get; set; }
 	public string[] Benchmarks { get; set; }
 }
