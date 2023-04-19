@@ -57,6 +57,7 @@ Setup(context =>
 		var manifest = new BuildManifest
 		{
 			NugetPackages = new string[0],
+			DockerComposeFiles = System.IO.Directory.GetFiles(".", "docker-compose*.yml"),
 			DockerPackages = System.IO.Directory.GetFiles(".\\src\\", "Dockerfile", SearchOption.AllDirectories),
 			UnitTests = System.IO.Directory.GetFiles(".", "*.UnitTests.csproj", SearchOption.AllDirectories),
 			AcceptanceTests = System.IO.Directory.GetFiles(".", "*.AcceptanceTests.csproj", SearchOption.AllDirectories),
@@ -128,7 +129,13 @@ Task("__UnitTest")
 
 Task("__DockerComposeUp")
 	.Does(() => {
-		Information("Todo!");
+
+		var settings = new DockerComposeUpSettings 
+		{
+			Files = buildManifest.DockerComposeFiles,
+			DetachedMode = true
+		};
+		DockerComposeUp(settings);
 	});
 
 Task("__AcceptanceTest")
@@ -346,6 +353,7 @@ public class BuildManifest
 {
 	public string[] NugetPackages { get; set; }
 	public string[] DockerPackages { get; set; }
+	public string[] DockerComposeFiles { get; set; }
 	public string[] AcceptanceTests { get; set; }
 	public string[] UnitTests { get; set; }
 	public string[] Benchmarks { get; set; }
