@@ -4,8 +4,11 @@
     ".\\src\\Template.DbApi.Api\\Dockerfile",
     ".\\src\\Template.DbApi.DbUp\\Dockerfile"
   ],
-  "Tests": [
+  "UnitTests": [
     ".\\test\\Template.DbApi.UnitTests\\Template.DbApi.UnitTests.csproj"
+  ],
+  "AcceptanceTests": [
+    ".\\test\\Template.DbApi.AcceptanceTests\\Template.DbApi.AcceptanceTests.csproj"
   ],
   "Benchmarks": [
     ".\\test\\Template.DbApi.Benchmark\\Template.DbApi.Benchmark.csproj"
