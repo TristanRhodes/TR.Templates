@@ -9,7 +9,7 @@ public sealed class HealthcheckStepDefinitions
 
     private readonly CoreTestContext _testContext;
 
-    public HealthcheckStepDefinitions(CoreTestContext testContext) // use it as ctor parameter
+    public HealthcheckStepDefinitions(CoreTestContext testContext)
     {
         _testContext = testContext;
     }
@@ -17,32 +17,28 @@ public sealed class HealthcheckStepDefinitions
     [When("We call the healthcheck endpoint")]
     public async Task WeCallTheHealthcheckEndpoint()
     {
-        var fullUrl = Path.Combine(_testContext.Uri, "_system/health");
-        using var client = new HttpClient();
-        _testContext.Response = await client.GetAsync(fullUrl);
+        using var client = _testContext.CreateClient();
+        _testContext.Response = await client.GetAsync("_system/health");
     }
 
     [When("We call the ping endpoint")]
     public async Task WeCallThePingEndpoint()
     {
-        var fullUrl = Path.Combine(_testContext.Uri, "_system/ping");
-        using var client = new HttpClient();
-        _testContext.Response = await client.GetAsync(fullUrl);
+        using var client = _testContext.CreateClient();
+        _testContext.Response = await client.GetAsync("_system/ping");
     }
 
     [When("We call the metrics endpoint")]
     public async Task WeCallTheMetricsEndpoint()
     {
-        var fullUrl = Path.Combine(_testContext.Uri, "_system/metrics");
-        using var client = new HttpClient();
-        _testContext.Response = await client.GetAsync(fullUrl);
+        using var client = _testContext.CreateClient();
+        _testContext.Response = await client.GetAsync("_system/metrics");
     }
 
     [When("We call the swagger endpoint")]
     public async Task WeCallTheSwaggerEndpoint()
     {
-        var fullUrl = Path.Combine(_testContext.Uri, "swagger/v1/swagger.json");
-        using var client = new HttpClient();
-        _testContext.Response = await client.GetAsync(fullUrl);
+        using var client = _testContext.CreateClient();
+        _testContext.Response = await client.GetAsync("swagger/v1/swagger.json");
     }
 }

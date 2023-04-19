@@ -9,4 +9,12 @@ public class CoreTestContext
 {
     public string Uri { get; set; }
     public HttpResponseMessage Response { get; set; }
+
+    public HttpClient CreateClient()
+    {
+        return new HttpClient()
+        {
+            BaseAddress = new Uri(Uri)
+        };
+    }
 }

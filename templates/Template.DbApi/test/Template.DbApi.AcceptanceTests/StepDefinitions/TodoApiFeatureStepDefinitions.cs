@@ -24,17 +24,15 @@ public sealed class TodoApiFeatureStepDefinitions
     [When("We create task '(.*)'")]
     public async Task WeCreateATodoItem(string text)
     {
-        var fullUrl = Path.Combine(_testContext.Uri, "TodoList");
-        using var client = new HttpClient();
         var payload = new
         {
             Title = text,
             Description = text,
             DueDate = DateTime.Today
         };
-        var result = await client.PostAsJsonAsync(fullUrl, payload);
 
-        _testContext.Response = result;
+        using var client = _testContext.CreateClient();
+        _testContext.Response = await client.PostAsJsonAsync("TodoList", payload);
     }
 
     [Then("The response should contain a new RecordId")]
@@ -42,16 +40,17 @@ public sealed class TodoApiFeatureStepDefinitions
     {
         var json = await _testContext.Response.Content.ReadAsStringAsync();
         _todoListTestContext.NewTodoItem = JsonConvert.DeserializeObject<dynamic>(json);
+
+        ((string)_todoListTestContext.NewTodoItem
+            .itemId.Value)
+            .Should().NotBeNull();
     }
 
     [When("We get our TodoList")]
     public async Task WeGetOurTodoList()
     {
-        var fullUrl = Path.Combine(_testContext.Uri, "TodoList");
-        using var client = new HttpClient();
-
-        var result = await client.GetAsync(fullUrl);
-        _testContext.Response = result;
+        using var client = _testContext.CreateClient();
+        _testContext.Response = await client.GetAsync("TodoList");
 
     }
 
