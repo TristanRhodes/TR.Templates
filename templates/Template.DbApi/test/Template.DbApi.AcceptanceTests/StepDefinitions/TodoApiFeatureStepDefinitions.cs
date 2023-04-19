@@ -31,8 +31,7 @@ public sealed class TodoApiFeatureStepDefinitions
             DueDate = DateTime.Today
         };
 
-        using var client = _testContext.CreateClient();
-        _testContext.Response = await client.PostAsJsonAsync("TodoList", payload);
+        await _testContext.PostAsJsonAsync("TodoList", payload);
     }
 
     [Then("The response should contain a new RecordId")]
@@ -49,9 +48,7 @@ public sealed class TodoApiFeatureStepDefinitions
     [When("We get our TodoList")]
     public async Task WeGetOurTodoList()
     {
-        using var client = _testContext.CreateClient();
-        _testContext.Response = await client.GetAsync("TodoList");
-
+        await _testContext.GetAsync("TodoList");
     }
 
     [Then("The response should contain a Todo List")]

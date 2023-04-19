@@ -17,28 +17,24 @@ public sealed class HealthcheckStepDefinitions
     [When("We call the healthcheck endpoint")]
     public async Task WeCallTheHealthcheckEndpoint()
     {
-        using var client = _testContext.CreateClient();
-        _testContext.Response = await client.GetAsync("_system/health");
+        await _testContext.GetAsync("_system/health");
     }
 
     [When("We call the ping endpoint")]
     public async Task WeCallThePingEndpoint()
     {
-        using var client = _testContext.CreateClient();
-        _testContext.Response = await client.GetAsync("_system/ping");
+        await _testContext.GetAsync("_system/ping");
     }
 
     [When("We call the metrics endpoint")]
     public async Task WeCallTheMetricsEndpoint()
     {
-        using var client = _testContext.CreateClient();
-        _testContext.Response = await client.GetAsync("_system/metrics");
+        await _testContext.GetAsync("_system/metrics");
     }
 
     [When("We call the swagger endpoint")]
     public async Task WeCallTheSwaggerEndpoint()
     {
-        using var client = _testContext.CreateClient();
-        _testContext.Response = await client.GetAsync("swagger/v1/swagger.json");
+        await _testContext.GetAsync("swagger/v1/swagger.json");
     }
 }
