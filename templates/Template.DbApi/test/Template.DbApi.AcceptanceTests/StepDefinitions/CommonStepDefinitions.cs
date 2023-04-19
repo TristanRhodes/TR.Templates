@@ -19,7 +19,10 @@ public class CommonStepDefinitions
     [Given("We have a Application api")]
     public void WeHaveAnApplicationApi()
     {
-        _testContext.Uri = "http://localhost:5160/";
+        _testContext.Uri
+            .Should().NotBeNullOrEmpty();
+
+        Console.WriteLine("Targeting: " + _testContext.Uri);
     }
 
     [Then("The response should be 200 OK")]

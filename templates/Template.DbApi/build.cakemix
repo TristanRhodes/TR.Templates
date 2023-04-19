@@ -5,9 +5,9 @@
     ".\\src\\Template.DbApi.DbUp\\Dockerfile"
   ],
   "DockerComposeFiles": [
-    "docker-compose.yml",
-    "docker-compose.infra.yml",
-    "docker-compose.override.yml"
+    ".\\docker-compose.yml",
+    ".\\docker-compose.infra.yml",
+    ".\\docker-compose.override.yml"
   ],
   "AcceptanceTests": [
     ".\\test\\Template.DbApi.AcceptanceTests\\Template.DbApi.AcceptanceTests.csproj"

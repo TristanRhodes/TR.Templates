@@ -151,7 +151,10 @@ Task("__AcceptanceTest")
 			var settings = new DotNetTestSettings
 			{
 				Configuration = configuration,
-				ResultsDirectory = artifactsFolder
+				ResultsDirectory = artifactsFolder,
+				EnvironmentVariables = new Dictionary<string, string> {
+					{ "env", "ci" }
+				}
 			};
 
 			// Console log for build agent
