@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Serilog;
+using Microsoft.IdentityModel.Logging;
+using Template.DbApi.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.WithSerilog(builder.Configuration, "Template.DbApi API");
 builder.Services.WithPostgres(builder.Configuration);
 builder.Services.WithMediatr();
+builder.Services.WithAuthentication(builder.Configuration);
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
@@ -27,6 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirectionExcluding("/_system");
 
 // https://github.com/prometheus-net/prometheus-net
@@ -35,6 +39,8 @@ app.UseMetricServer();
 app.UseRouting();
 app.UseHttpMetrics();
 app.UseAuthorization();
+
+app.UseMiddleware<JwtMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {

@@ -8,6 +8,10 @@ using Microsoft.Extensions.Options;
 using Template.DbApi.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Template.DbApi;
 public static class ConfigurationExtensions
@@ -24,6 +28,27 @@ public static class ConfigurationExtensions
     public static IServiceCollection WithMediatr(this IServiceCollection services)
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(ConfigurationExtensions)));
+        return services;
+    }
+
+    public static IServiceCollection WithAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-7.0
+        // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-7.0&tabs=windows
+        // https://jasonwatmore.com/post/2021/12/14/net-6-jwt-authentication-tutorial-with-example-api
+
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
+                options => configuration.Bind("JwtSettings", options))
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                options => configuration.Bind("CookieSettings", options));
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("RequireAppUserRole",
+                 policy => policy.RequireRole("AppUser"));
+        });
+
         return services;
     }
 

@@ -31,6 +31,7 @@ services:
     networks:
       - main
 
+  # For more on Keycloak: https://www.keycloak.org/getting-started/getting-started-docker
   enricher.keycloak:
     depends_on:
       - enricher.db
