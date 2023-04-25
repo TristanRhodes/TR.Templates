@@ -340,15 +340,31 @@ Task("FullPackAndPush")
 	.IsDependentOn("__NugetPush")
 	.IsDependentOn("__DockerPush");
 
+Task("ExportSwagger")
+	.IsDependentOn("__DockerComposeUp")
+	.Does(async () => {
+		
+		var swaggerArtifacts = System.IO.Path.Combine(artifactsFolder, "Swagger");
+		if (!System.IO.Directory.Exists(swaggerArtifacts))
+			System.IO.Directory.CreateDirectory(swaggerArtifacts);
+
+		foreach(var kvp in buildManifest.ApiSpecs)
+		{
+			using var client = new System.Net.Http.HttpClient();
+			var response = await client.GetAsync($"{kvp.Value}/swagger/v1/swagger.json");
+			response.EnsureSuccessStatusCode();
+
+			var content = await response.Content.ReadAsStringAsync();
+
+			var fileArtifact = System.IO.Path.Combine(swaggerArtifacts, $"{kvp.Key}.swagger.json");
+
+			System.IO.File.WriteAllText(fileArtifact, content);
+		}
+	});
+
 Task("Default")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark");
-
-	// TODO: Export Swagger
-	// Starts apps/containers (if not already running)
-	// Pulls swagger specs
-	// Writes to /artifacts/swagger folder
-	// https://localhost:7160/swagger/v1/swagger.json
 
 RunTarget(target);
 
@@ -360,4 +376,5 @@ public class BuildManifest
 	public string[] AcceptanceTests { get; set; }
 	public string[] UnitTests { get; set; }
 	public string[] Benchmarks { get; set; }
+	public Dictionary<string, string> ApiSpecs { get; set; }
 }

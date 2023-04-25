@@ -17,5 +17,8 @@
   ],
   "Benchmarks": [
     ".\\test\\Template.DbApi.Benchmark\\Template.DbApi.Benchmark.csproj"
-  ]
+  ],
+  "ApiSpecs": {
+    "Template.DbApi.Api": "https://localhost:7160"
+  }
 }
