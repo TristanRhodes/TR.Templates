@@ -39,6 +39,8 @@ var containerRegistryUserName =
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
+var swaggerFolder = System.IO.Path.Combine(artifactsFolder, "swagger");
+var postmanFolder = System.IO.Path.Combine(artifactsFolder, "postman");
 
 BuildManifest buildManifest;
 
@@ -202,6 +204,42 @@ Task("__VersionInfo")
 		Information("Version Number: " + versionNumber);
 	});
 
+Task("__GenerateSwagger")
+	.Does(async () => {
+
+		if (!System.IO.Directory.Exists(swaggerFolder))
+			System.IO.Directory.CreateDirectory(swaggerFolder);
+
+		foreach(var kvp in buildManifest.ApiSpecs)
+		{
+			using var client = new System.Net.Http.HttpClient();
+			var response = await client.GetAsync($"{kvp.Value}/swagger/v1/swagger.json");
+			response.EnsureSuccessStatusCode();
+
+			var content = await response.Content.ReadAsStringAsync();
+
+			var fileArtifact = System.IO.Path.Combine(swaggerFolder, $"{kvp.Key}.swagger.json");
+
+			System.IO.File.WriteAllText(fileArtifact, content);
+		}
+	});
+
+Task("__GeneratePostman")
+	.Does(() => {
+
+		// We have a container to run here, we need to use swagger folder and postman folder as volumes.
+		// From Root: 
+		// docker build ./docker/OpenApiToPostman/ -t tr/openapi-to-postmanv2
+		// docker run -d -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts:/artifacts -p 8080:8080 tr/openapi-to-postmanv2
+		
+		// TODO: 
+
+		// Here we are going to:
+		// * Launch a node container (with volume attached to artifacts folder)
+		// * Run the commands for OpenApi to JSON (https://github.com/postmanlabs/OpenAPI-to-Postman)
+		// > npm i -g openapi-to-postmanv2
+	});
+
 Task("__NugetPack")
 	.Does(() => {
 
@@ -342,25 +380,8 @@ Task("FullPackAndPush")
 
 Task("ExportSwagger")
 	.IsDependentOn("__DockerComposeUp")
-	.Does(async () => {
-		
-		var swaggerArtifacts = System.IO.Path.Combine(artifactsFolder, "Swagger");
-		if (!System.IO.Directory.Exists(swaggerArtifacts))
-			System.IO.Directory.CreateDirectory(swaggerArtifacts);
-
-		foreach(var kvp in buildManifest.ApiSpecs)
-		{
-			using var client = new System.Net.Http.HttpClient();
-			var response = await client.GetAsync($"{kvp.Value}/swagger/v1/swagger.json");
-			response.EnsureSuccessStatusCode();
-
-			var content = await response.Content.ReadAsStringAsync();
-
-			var fileArtifact = System.IO.Path.Combine(swaggerArtifacts, $"{kvp.Key}.swagger.json");
-
-			System.IO.File.WriteAllText(fileArtifact, content);
-		}
-	});
+	.IsDependentOn("__GenerateSwagger")
+	.IsDependentOn("__GeneratePostman");
 
 Task("Default")
 	.IsDependentOn("__UnitTest")
