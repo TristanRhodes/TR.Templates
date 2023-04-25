@@ -39,6 +39,8 @@ var containerRegistryUserName =
 
 var artifactsFolder = "./artifacts";
 var packagesFolder = System.IO.Path.Combine(artifactsFolder, "packages");
+var swaggerFolder = System.IO.Path.Combine(artifactsFolder, "swagger");
+var postmanFolder = System.IO.Path.Combine(artifactsFolder, "postman");
 
 BuildManifest buildManifest;
 
@@ -202,6 +204,58 @@ Task("__VersionInfo")
 		Information("Version Number: " + versionNumber);
 	});
 
+Task("__GenerateSwagger")
+	.Does(async () => {
+
+		if (!System.IO.Directory.Exists(swaggerFolder))
+			System.IO.Directory.CreateDirectory(swaggerFolder);
+
+		foreach(var kvp in buildManifest.ApiSpecs)
+		{
+			using var client = new System.Net.Http.HttpClient();
+			var response = await client.GetAsync($"{kvp.Value}/swagger/v1/swagger.json");
+			response.EnsureSuccessStatusCode();
+
+			var content = await response.Content.ReadAsStringAsync();
+
+			var fileArtifact = System.IO.Path.Combine(swaggerFolder, $"{kvp.Key}.swagger.json");
+
+			System.IO.File.WriteAllText(fileArtifact, content);
+		}
+	});
+
+Task("__GeneratePostman")
+	.Does(() => {
+		
+		// From Root:
+		// docker build ./docker/OpenApiToPostman/ -t tr/openapi-to-postmanv2
+		// docker run -d -v {localroot}\artifacts\swagger:/swagger -v {localroot}\artifacts\postman:/postman -p 8080:8080 tr/openapi-to-postmanv2
+
+		var basePath = System.IO.Path.GetFullPath(@".\artifacts");
+
+		// Build Docker
+		var buildSettings = new DockerImageBuildSettings
+		{
+			Tag = new [] { "tr/openapi-to-postmanv2" }
+		};
+		DockerBuild(buildSettings, "./docker/OpenApiToPostman/");
+
+		// Run Docker
+		var runSettings = new DockerContainerRunSettings 
+		{
+			Volume = new [] 
+			{ 
+				@$"{basePath}\swagger:/swagger",
+				@$"{basePath}\postman:/postman",
+			},
+			Publish = new []
+			{
+				"8080:8080"
+			}
+		};
+		DockerRun(runSettings, "tr/openapi-to-postmanv2", string.Empty, "-d");
+	});
+
 Task("__NugetPack")
 	.Does(() => {
 
@@ -340,15 +394,14 @@ Task("FullPackAndPush")
 	.IsDependentOn("__NugetPush")
 	.IsDependentOn("__DockerPush");
 
+Task("ExportApiSpecs")
+	.IsDependentOn("__DockerComposeUp")
+	.IsDependentOn("__GenerateSwagger")
+	.IsDependentOn("__GeneratePostman");
+
 Task("Default")
 	.IsDependentOn("__UnitTest")
 	.IsDependentOn("__Benchmark");
-
-	// TODO: Export Swagger
-	// Starts apps/containers (if not already running)
-	// Pulls swagger specs
-	// Writes to /artifacts/swagger folder
-	// https://localhost:7160/swagger/v1/swagger.json
 
 RunTarget(target);
 
@@ -360,4 +413,5 @@ public class BuildManifest
 	public string[] AcceptanceTests { get; set; }
 	public string[] UnitTests { get; set; }
 	public string[] Benchmarks { get; set; }
+	public Dictionary<string, string> ApiSpecs { get; set; }
 }
