@@ -227,6 +227,10 @@ Task("__GenerateSwagger")
 Task("__GeneratePostman")
 	.Does(() => {
 		
+		// From Root:
+		// docker build ./docker/OpenApiToPostman/ -t tr/openapi-to-postmanv2
+		// docker run -d -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts\swagger:/swagger -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts\postman:/postman -p 8080:8080 tr/openapi-to-postmanv2
+
 		var basePath = System.IO.Path.GetFullPath(@".\artifacts");
 
 		// Build Docker

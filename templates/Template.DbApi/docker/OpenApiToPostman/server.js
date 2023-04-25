@@ -28,13 +28,3 @@ files.forEach(file => {
 
 });
 
-// docker build . -t tr/openapi-to-postmanv2
-// set directory to app root
-
-// From Root: docker build ./docker/OpenApiToPostman/ -t tr/openapi-to-postmanv2
-// From Root: docker run -d -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts:/artifacts -p 8080:8080 tr/openapi-to-postmanv2
-
-
-// From Root: docker run -d -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts\swagger:/swagger -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts\postman:/postman -p 8080:8080 tr/openapi-to-postmanv2
-
-// Volumes need full path - need to use docker compose to get relative paths.
