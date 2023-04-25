@@ -226,18 +226,30 @@ Task("__GenerateSwagger")
 
 Task("__GeneratePostman")
 	.Does(() => {
-
-		// We have a container to run here, we need to use swagger folder and postman folder as volumes.
-		// From Root: 
-		// docker build ./docker/OpenApiToPostman/ -t tr/openapi-to-postmanv2
-		// docker run -d -v C:\Git\Template.TestedLibrary\templates\Template.DbApi\artifacts:/artifacts -p 8080:8080 tr/openapi-to-postmanv2
 		
-		// TODO: 
+		var basePath = System.IO.Path.GetFullPath(@".\artifacts");
 
-		// Here we are going to:
-		// * Launch a node container (with volume attached to artifacts folder)
-		// * Run the commands for OpenApi to JSON (https://github.com/postmanlabs/OpenAPI-to-Postman)
-		// > npm i -g openapi-to-postmanv2
+		// Build Docker
+		var buildSettings = new DockerImageBuildSettings
+		{
+			Tag = new [] { "tr/openapi-to-postmanv2" }
+		};
+		DockerBuild(buildSettings, "./docker/OpenApiToPostman/");
+
+		// Run Docker
+		var runSettings = new DockerContainerRunSettings 
+		{
+			Volume = new [] 
+			{ 
+				@$"{basePath}\swagger:/swagger",
+				@$"{basePath}\postman:/postman",
+			},
+			Publish = new []
+			{
+				"8080:8080"
+			}
+		};
+		DockerRun(runSettings, "tr/openapi-to-postmanv2", string.Empty, "-d");
 	});
 
 Task("__NugetPack")
@@ -378,7 +390,7 @@ Task("FullPackAndPush")
 	.IsDependentOn("__NugetPush")
 	.IsDependentOn("__DockerPush");
 
-Task("ExportSwagger")
+Task("ExportApiSpecs")
 	.IsDependentOn("__DockerComposeUp")
 	.IsDependentOn("__GenerateSwagger")
 	.IsDependentOn("__GeneratePostman");
