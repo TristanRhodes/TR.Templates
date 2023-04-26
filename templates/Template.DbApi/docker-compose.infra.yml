@@ -23,5 +23,31 @@ services:
     networks:
       - main
 
+  enricher.adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - main
+
+  # For more on Keycloak: https://www.keycloak.org/getting-started/getting-started-docker
+  enricher.keycloak:
+    depends_on:
+      - enricher.db
+    container_name: Template.DbApi.Keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_ADMIN_USER: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    image: quay.io/keycloak/keycloak:21.1.0
+    command: 
+      - start-dev 
+    ports:
+      - "28080:8080"
+    networks:
+      - main
+
 networks:
     main:

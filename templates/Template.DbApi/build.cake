@@ -247,10 +247,6 @@ Task("__GeneratePostman")
 			{ 
 				@$"{basePath}\swagger:/swagger",
 				@$"{basePath}\postman:/postman",
-			},
-			Publish = new []
-			{
-				"8080:8080"
 			}
 		};
 		DockerRun(runSettings, "tr/openapi-to-postmanv2", string.Empty, "-d");
@@ -407,11 +403,18 @@ RunTarget(target);
 
 public class BuildManifest
 {
+	// The projects to package as Nuget packages.
 	public string[] NugetPackages { get; set; }
+	// The projects to package as docker images
 	public string[] DockerPackages { get; set; }
+	// The docker compose files to launch. Should start with the docker-compose.yml file.
 	public string[] DockerComposeFiles { get; set; }
+	// The projects to run specflow tests against the API. Will spin up DockerCompose files to host API's.
 	public string[] AcceptanceTests { get; set; }
+	// The projects to run unit tests against. No infra required.
 	public string[] UnitTests { get; set; }
+	// The projects to run as Benchmark dotnet console apps. No infra required.
 	public string[] Benchmarks { get; set; }
+	// The Name and Url to retrieve swagger API specs from. Will spin up DockerCompose files to host API's.
 	public Dictionary<string, string> ApiSpecs { get; set; }
 }
