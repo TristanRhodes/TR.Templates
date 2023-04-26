@@ -58,7 +58,7 @@ public class AuthController : ControllerBase
                 new[] 
                 { 
                     new Claim("id", user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, "AppUser"),
+                    new Claim(ClaimTypes.Role, Roles.AppUser),
                 }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),

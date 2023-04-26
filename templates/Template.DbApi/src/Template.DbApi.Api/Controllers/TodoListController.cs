@@ -32,16 +32,15 @@ public class TodoListController : ControllerBase
     }
 
     [HttpGet("GetItems")]
-    [Authorize(Roles = "AppUser")]
+    [Authorize(Roles = Roles.AppUser)]
     public async Task<IActionResult> GetItems()
     {
         var result = await _mediator.Send(new SelectTodo());
-
         return Ok(result);
     }
 
     [HttpPost("InsertItem")]
-    [Authorize(Roles = "AppUser")]
+    [Authorize(Roles = Roles.AppUser)]
     public async Task<IActionResult> InsertItem(InsertTodo insert)
     {
         var result = await _mediator.Send(insert);
