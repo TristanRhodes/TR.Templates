@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using Prometheus;
 using Serilog;
 using Microsoft.IdentityModel.Logging;
-using Template.DbApi.Api.Middleware;
 using Template.DbApi.Api;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +39,6 @@ app.UseMetricServer();
 app.UseAuthentication();
 app.UseRouting();
 app.UseHttpMetrics();
-app.UseMiddleware<JwtMiddleware>();
 
 app.UseAuthorization();
 

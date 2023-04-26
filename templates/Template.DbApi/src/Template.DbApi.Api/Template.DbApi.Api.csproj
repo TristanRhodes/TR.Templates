@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Template.DbApi\Template.DbApi.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middleware\" />
+  </ItemGroup>
+
 </Project>
