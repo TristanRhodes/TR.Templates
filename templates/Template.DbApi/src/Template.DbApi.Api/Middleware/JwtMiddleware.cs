@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using System.Security.Claims;
+using Template.DbApi.Api.Controllers;
+using Microsoft.AspNetCore.Identity;
 
 namespace Template.DbApi.Api.Middleware;
 
@@ -45,7 +48,12 @@ public class JwtMiddleware
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
+
+            var identity = (ClaimsIdentity)context.User.Identity;
+            //identity.AddClaims(jwtToken.Claims);
+
             //var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+            //var hasClaim = context.User.HasClaim(c => c.Type == "role" && c.Value == "AppUser");
 
             //// attach user to context on successful jwt validation
             //context.Items["User"] = userService.GetById(userId);

@@ -12,6 +12,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using System.Text;
 
 namespace Template.DbApi;
 public static class ConfigurationExtensions
@@ -31,7 +34,7 @@ public static class ConfigurationExtensions
         return services;
     }
 
-    public static IServiceCollection WithAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection WithAuthentication(this IServiceCollection services, IConfiguration configuration, string key)
     {
         // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-7.0
         // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/jwt-authn?view=aspnetcore-7.0&tabs=windows
@@ -39,14 +42,31 @@ public static class ConfigurationExtensions
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,
-                options => configuration.Bind("JwtSettings", options))
+                options =>
+                {
+                    var bytes = Encoding.ASCII.GetBytes(key);
+                    var ssKey = new SymmetricSecurityKey(bytes);
+
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // TODO: These need to be false to work locally. Investigate.
+                        ValidateAudience = false,
+                        ValidateIssuer = false,
+
+                        IssuerSigningKey = ssKey,
+                        TokenDecryptionKey = ssKey
+                        
+                    };
+                    configuration.Bind("JwtSettings", options);
+                })
             .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-                options => configuration.Bind("CookieSettings", options));
+                options =>
+                {
+                    configuration.Bind("CookieSettings", options);
+                });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("RequireAppUserRole",
-                 policy => policy.RequireRole("AppUser"));
         });
 
         return services;
