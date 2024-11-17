@@ -101,7 +101,6 @@ Task("__PackageArgsCheck")
 Task("__CloneTestedLibraryTemplate")
 	.Does(() => {
 
-		Information("Cloning Template.TestedLibrary...");
 
 		if (!System.IO.Directory.Exists(@"./staging"))
 			System.IO.Directory.CreateDirectory(@"./staging");
@@ -109,9 +108,12 @@ Task("__CloneTestedLibraryTemplate")
 		if (System.IO.Directory.Exists(@"./staging/Template.TestedLibrary"))
 			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
 			
+		Information("Setting credentials for Template.TestedLibrary...");
 		var setOriginResult = StartProcess("git", $"remote set-url origin https://github:{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
 		if (setOriginResult != 0)
 			throw new ApplicationException($"Failed to set origin for Template.TestedLibrary.");
+
+		Information("Cloning Template.TestedLibrary...");
 
 		var args = new ProcessArgumentBuilder()
 					.Append("clone https://github.com/TristanRhodes/Template.TestedLibrary.git");
@@ -131,8 +133,6 @@ Task("__CloneTestedLibraryTemplate")
 
 Task("__CloneTestedApiTemplate")
 	.Does(() => {
-
-		Information("Cloning Template.TestedApi...");
 			
 		if (!System.IO.Directory.Exists(@"./staging"))
 			System.IO.Directory.CreateDirectory(@"./staging");
@@ -143,6 +143,8 @@ Task("__CloneTestedApiTemplate")
 		var setOriginResult = StartProcess("git", $"remote set-url origin https://github:{apiKey}@github.com/TristanRhodes/Template.TestedApi.git");
 		if (setOriginResult != 0)
 			throw new ApplicationException($"Failed to set origin for Template.TestedApi.");
+			
+		Information("Cloning Template.TestedApi...");
 
 		var args = new ProcessArgumentBuilder()
 					.Append("clone https://github.com/TristanRhodes/Template.TestedApi.git");
