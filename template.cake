@@ -30,7 +30,7 @@ string fullPackageName;
 string[] templates = new [] 
 {
 	"Template.TestedLibrary",
-	"Template.DbApi",
+	"Template.TestedApi",
 };
 
 public static void MoveDirectory(string source, string target)
@@ -96,19 +96,19 @@ Task("__PackageArgsCheck")
 			throw new ArgumentException("ApiKey is required");
 	});
 	
-Task("__CloneSubTemplates")
+Task("__CloneTestedLibraryTemplate")
 	.Does(() => {
 
 		Information("Cloning Template.TestedLibrary...");
 
-		var args = new ProcessArgumentBuilder()
-					.Append("clone https://github.com/TristanRhodes/Template.TestedLibrary.git");
-					
 		if (!System.IO.Directory.Exists(@"./staging"))
 			System.IO.Directory.CreateDirectory(@"./staging");
 	
 		if (System.IO.Directory.Exists(@"./staging/Template.TestedLibrary"))
 			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
+			
+		var args = new ProcessArgumentBuilder()
+					.Append("clone https://github.com/TristanRhodes/Template.TestedLibrary.git");
 
 		var cloneSettings = new ProcessSettings
 		{
@@ -121,8 +121,33 @@ Task("__CloneSubTemplates")
 			throw new ApplicationException($"Failed to clone Template.TestedLibrary.");
 		
 		MoveDirectory("staging/Template.TestedLibrary", "templates/Template.TestedLibrary");
+	});
+
+Task("__CloneTestedApiTemplate")
+	.Does(() => {
 
 		Information("Cloning Template.DbApi...");
+			
+		if (!System.IO.Directory.Exists(@"./staging"))
+			System.IO.Directory.CreateDirectory(@"./staging");
+
+		if (System.IO.Directory.Exists(@"./staging/Template.TestedApi"))
+			System.IO.Directory.Delete(@"./staging/Template.TestedApi", true);
+
+		var args = new ProcessArgumentBuilder()
+					.Append("clone https://github.com/TristanRhodes/Template.TestedApi.git");
+
+		var cloneSettings = new ProcessSettings
+		{
+			Arguments = args,
+			WorkingDirectory = @"./staging"
+		};
+
+		var cloneResult = StartProcess("git", cloneSettings);
+		if (cloneResult != 0)
+			throw new ApplicationException($"Failed to clone Template.TestedApi.");
+
+		MoveDirectory("staging/Template.TestedApi", "templates/Template.TestedApi");
 	});
 	
 
@@ -139,6 +164,8 @@ Task("__CreateProjectAndTest")
 
 		foreach(var template in templates)
 		{
+			Information("Testing Tempalte: " + template);
+
 			Information("Cleaning folders...");
 			if (System.IO.Directory.Exists(@"./bin/template-proj"))
 				System.IO.Directory.Delete(@"./bin/template-proj", true);
