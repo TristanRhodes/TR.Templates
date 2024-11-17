@@ -20,13 +20,13 @@
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "replaces": "Template.DbApi"
+      "replaces": "Template.TestedApi"
     },
     "RenameFiles": {
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "fileRename": "Template.DbApi"
+      "fileRename": "Template.TestedApi"
     }
   },
   "sources": [
