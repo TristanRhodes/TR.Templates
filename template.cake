@@ -109,6 +109,8 @@ Task("__CloneTestedLibraryTemplate")
 		if (System.IO.Directory.Exists(@"./staging/Template.TestedLibrary"))
 			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
 			
+		var cloneResult = StartProcess("git", $"remote set-url origin https://github:{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
+
 		var args = new ProcessArgumentBuilder()
 					.Append("clone https://github.com/TristanRhodes/Template.TestedLibrary.git");
 
@@ -135,6 +137,8 @@ Task("__CloneTestedApiTemplate")
 
 		if (System.IO.Directory.Exists(@"./staging/Template.TestedApi"))
 			System.IO.Directory.Delete(@"./staging/Template.TestedApi", true);
+			
+		var cloneResult = StartProcess("git", $"remote set-url origin https://github:{apiKey}@github.com/TristanRhodes/Template.TestedApi.git");
 
 		var args = new ProcessArgumentBuilder()
 					.Append("clone https://github.com/TristanRhodes/Template.TestedApi.git");
