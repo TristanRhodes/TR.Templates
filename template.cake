@@ -83,7 +83,7 @@ Setup(context =>
 
 Teardown(context =>
 {
-	var setOriginResult = StartProcess("git", $"remote set-url origin https://github:{apiKey}@github.com/TristanRhodes/TR.Templates.git");
+	var setOriginResult = StartProcess("git", $"remote set-url origin https://github.com/TristanRhodes/TR.Templates.git");
 });
 
 ///////////////////////////////////////////////////////////////////////////////
