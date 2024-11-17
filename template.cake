@@ -119,16 +119,14 @@ Task("__CloneTestedLibraryTemplate")
 		var cloneResult = StartProcess("git", cloneSettings);
 		if (cloneResult != 0)
 			throw new ApplicationException($"Failed to clone Template.TestedLibrary.");
-		
-		System.IO.Directory.Delete(@"./staging/Template.TestedLibrary/.git", true);
-
+			
 		MoveDirectory("staging/Template.TestedLibrary", "templates/Template.TestedLibrary");
 	});
 
 Task("__CloneTestedApiTemplate")
 	.Does(() => {
 
-		Information("Cloning Template.DbApi...");
+		Information("Cloning Template.TestedApi...");
 			
 		if (!System.IO.Directory.Exists(@"./staging"))
 			System.IO.Directory.CreateDirectory(@"./staging");
@@ -148,9 +146,7 @@ Task("__CloneTestedApiTemplate")
 		var cloneResult = StartProcess("git", cloneSettings);
 		if (cloneResult != 0)
 			throw new ApplicationException($"Failed to clone Template.TestedApi.");
-
-		System.IO.Directory.Delete(@"./staging/Template.TestedApi/.git", true);
-
+			
 		MoveDirectory("staging/Template.TestedApi", "templates/Template.TestedApi");
 	});
 	
