@@ -33,6 +33,44 @@ string[] templates = new []
 	"Template.DbApi",
 };
 
+public static void MoveDirectory(string source, string target)
+{
+    var stack = new Stack<Folders>();
+    stack.Push(new Folders(source, target));
+
+    while (stack.Count > 0)
+    {
+        var folders = stack.Pop();
+        System.IO.Directory.CreateDirectory(folders.Target);
+        foreach (var file in System.IO.Directory.GetFiles(folders.Source, "*.*"))
+        {
+             string targetFile = System.IO.Path.Combine(folders.Target, System.IO.Path.GetFileName(file));
+             if (System.IO.File.Exists(targetFile)) System.IO.File.Delete(targetFile);
+             System.IO.File.Move(file, targetFile);
+        }
+
+        foreach (var folder in System.IO.Directory.GetDirectories(folders.Source))
+        {
+            stack.Push(new Folders(folder, 
+				System.IO.Path.Combine(folders.Target, System.IO.Path.GetFileName(folder))));
+        }
+    }
+
+    System.IO.Directory.Delete(source, true);
+}
+
+public class Folders
+{
+    public string Source { get; private set; }
+    public string Target { get; private set; }
+
+    public Folders(string source, string target)
+    {
+        Source = source;
+        Target = target;
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Setup / Teardown
 ///////////////////////////////////////////////////////////////////////////////
@@ -58,6 +96,36 @@ Task("__PackageArgsCheck")
 			throw new ArgumentException("ApiKey is required");
 	});
 	
+Task("__CloneSubTemplates")
+	.Does(() => {
+
+		Information("Cloning Template.TestedLibrary...");
+
+		var args = new ProcessArgumentBuilder()
+					.Append("clone https://github.com/TristanRhodes/Template.TestedLibrary.git");
+					
+		if (!System.IO.Directory.Exists(@"./staging"))
+			System.IO.Directory.CreateDirectory(@"./staging");
+	
+		if (System.IO.Directory.Exists(@"./staging/Template.TestedLibrary"))
+			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
+
+		var cloneSettings = new ProcessSettings
+		{
+			Arguments = args,
+			WorkingDirectory = @"./staging"
+		};
+
+		var cloneResult = StartProcess("git", cloneSettings);
+		if (cloneResult != 0)
+			throw new ApplicationException($"Failed to clone Template.TestedLibrary.");
+		
+		MoveDirectory("staging/Template.TestedLibrary", "templates/Template.TestedLibrary");
+
+		Information("Cloning Template.DbApi...");
+	});
+	
+
 Task("__InstallTemplate")
 	.Does(() => {
 		Information("Installing Template...");
@@ -144,6 +212,7 @@ Task("__VersionInfo")
 	});
 
 Task("InstallAndTestTemplate")
+	.IsDependentOn("__CloneSubTemplates")
 	.IsDependentOn("__InstallTemplate")
 	.IsDependentOn("__CreateProjectAndTest")
 	.IsDependentOn("__UninstallTemplate");
