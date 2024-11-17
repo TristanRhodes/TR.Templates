@@ -116,7 +116,7 @@ Task("__CloneTestedLibraryTemplate")
 		Information("Cloning Template.TestedLibrary...");
 
 		var args = new ProcessArgumentBuilder()
-					.Append("clone https://{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
+					.Append($"clone https://{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
 
 		var cloneSettings = new ProcessSettings
 		{
@@ -147,7 +147,7 @@ Task("__CloneTestedApiTemplate")
 		Information("Cloning Template.TestedApi...");
 
 		var args = new ProcessArgumentBuilder()
-					.Append("clone https://{apiKey}@github.com/TristanRhodes/Template.TestedApi.git");
+					.Append($"clone https://{apiKey}@github.com/TristanRhodes/Template.TestedApi.git");
 
 		var cloneSettings = new ProcessSettings
 		{
