@@ -33,7 +33,7 @@ string[] templates = new []
 	"Template.TestedApi",
 };
 
-public static void MoveDirectory(string source, string target)
+public void MoveDirectory(string source, string target)
 {
     var stack = new Stack<Folders>();
     stack.Push(new Folders(source, target));
@@ -51,12 +51,14 @@ public static void MoveDirectory(string source, string target)
 
         foreach (var folder in System.IO.Directory.GetDirectories(folders.Source))
         {
+			// Don't copy the .git folder.
+			if (folder.EndsWith(".git"))
+				continue;
+
             stack.Push(new Folders(folder, 
 				System.IO.Path.Combine(folders.Target, System.IO.Path.GetFileName(folder))));
         }
     }
-
-    System.IO.Directory.Delete(source, true);
 }
 
 public class Folders
