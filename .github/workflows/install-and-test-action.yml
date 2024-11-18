@@ -21,3 +21,5 @@ jobs:
         with:
           script-path: template.cake
           target: InstallAndTestTemplate
+          ApiKey: ${{ secrets.NUGET_APIKEY }}
+          Source: ${{ vars.NUGET_SOURCE }} 

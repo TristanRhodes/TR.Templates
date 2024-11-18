@@ -108,7 +108,6 @@ Task("__CloneTestedLibraryTemplate")
 			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
 			
 		Information("Cloning Template.TestedLibrary...");
-		Information("Using API key starting with: " + apiKey.Substring(0, 5));
 
 		var args = new ProcessArgumentBuilder()
 					.Append($"clone https://TristanRhodes:{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
@@ -242,6 +241,7 @@ Task("__VersionInfo")
 	});
 
 Task("InstallAndTestTemplate")
+	.IsDependentOn("__PackageArgsCheck")
 	.IsDependentOn("__CloneTestedLibraryTemplate")
 	.IsDependentOn("__CloneTestedApiTemplate")
 	.IsDependentOn("__InstallTemplate")
