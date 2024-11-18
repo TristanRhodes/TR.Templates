@@ -83,7 +83,7 @@ Setup(context =>
 
 Teardown(context =>
 {
-	var setOriginResult = StartProcess("git", $"remote set-url origin https://github.com/TristanRhodes/TR.Templates.git");
+    // Executed AFTER the last task.
 });
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -107,12 +107,8 @@ Task("__CloneTestedLibraryTemplate")
 		if (System.IO.Directory.Exists(@"./staging/Template.TestedLibrary"))
 			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
 			
-		Information("Setting credentials for Template.TestedLibrary...");
-		var setOriginResult = StartProcess("git", $"remote set-url origin https://TristanRhodes:{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
-		if (setOriginResult != 0)
-			throw new ApplicationException($"Failed to set origin for Template.TestedLibrary.");
-
 		Information("Cloning Template.TestedLibrary...");
+		Information("Using API key starting with: " + apiKey.Substring(0, 5));
 
 		var args = new ProcessArgumentBuilder()
 					.Append($"clone https://TristanRhodes:{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
@@ -138,11 +134,7 @@ Task("__CloneTestedApiTemplate")
 
 		if (System.IO.Directory.Exists(@"./staging/Template.TestedApi"))
 			System.IO.Directory.Delete(@"./staging/Template.TestedApi", true);
-			
-		var setOriginResult = StartProcess("git", $"remote set-url origin https://TristanRhodes:{apiKey}@github.com/TristanRhodes/Template.TestedApi.git");
-		if (setOriginResult != 0)
-			throw new ApplicationException($"Failed to set origin for Template.TestedApi.");
-			
+						
 		Information("Cloning Template.TestedApi...");
 
 		var args = new ProcessArgumentBuilder()
