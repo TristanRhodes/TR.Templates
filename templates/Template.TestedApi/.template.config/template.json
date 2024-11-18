@@ -2,10 +2,10 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Tristan Rhodes",
   "classifications": [ "DotNet Core", "Solution" ],
-  "identity": "Template.DbApi",
-  "name": "Database Api",
+  "identity": "Template.TestedApi",
+  "name": "Tested Api Template",
   "description": "Postgres database with API, comes with DbUp, packages as Api and containers.",
-  "shortName": "Template.DbApi",
+  "shortName": "Template.TestedApi",
   "tags": {
     "language": "C#",
     "type": "solution"
@@ -20,13 +20,13 @@
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "replaces": "Template.DbApi"
+      "replaces": "Template.TestedApi"
     },
     "RenameFiles": {
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "fileRename": "Template.DbApi"
+      "fileRename": "Template.TestedApi"
     }
   },
   "sources": [

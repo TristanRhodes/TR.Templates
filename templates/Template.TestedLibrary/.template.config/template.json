@@ -20,13 +20,13 @@
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "replaces": "TestedLibrary"
+      "replaces": "Template.TestedLibrary"
     },
     "RenameFiles": {
       "type": "derived",
       "valueSource": "ProjectName",
       "valueTransform": "chain",
-      "fileRename": "TestedLibrary"
+      "fileRename": "Template.TestedLibrary"
     }
   },
   "sources": [

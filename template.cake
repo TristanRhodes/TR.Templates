@@ -30,8 +30,48 @@ string fullPackageName;
 string[] templates = new [] 
 {
 	"Template.TestedLibrary",
-	"Template.DbApi",
+	"Template.TestedApi",
 };
+
+public void MoveDirectory(string source, string target)
+{
+    var stack = new Stack<Folders>();
+    stack.Push(new Folders(source, target));
+
+    while (stack.Count > 0)
+    {
+        var folders = stack.Pop();
+        System.IO.Directory.CreateDirectory(folders.Target);
+        foreach (var file in System.IO.Directory.GetFiles(folders.Source, "*.*"))
+        {
+             string targetFile = System.IO.Path.Combine(folders.Target, System.IO.Path.GetFileName(file));
+             if (System.IO.File.Exists(targetFile)) System.IO.File.Delete(targetFile);
+             System.IO.File.Move(file, targetFile);
+        }
+
+        foreach (var folder in System.IO.Directory.GetDirectories(folders.Source))
+        {
+			// Don't copy the .git folder.
+			if (folder.EndsWith(".git"))
+				continue;
+
+            stack.Push(new Folders(folder, 
+				System.IO.Path.Combine(folders.Target, System.IO.Path.GetFileName(folder))));
+        }
+    }
+}
+
+public class Folders
+{
+    public string Source { get; private set; }
+    public string Target { get; private set; }
+
+    public Folders(string source, string target)
+    {
+        Source = source;
+        Target = target;
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Setup / Teardown
@@ -58,6 +98,61 @@ Task("__PackageArgsCheck")
 			throw new ArgumentException("ApiKey is required");
 	});
 	
+Task("__CloneTestedLibraryTemplate")
+	.Does(() => {
+
+		if (!System.IO.Directory.Exists(@"./staging"))
+			System.IO.Directory.CreateDirectory(@"./staging");
+	
+		if (System.IO.Directory.Exists(@"./staging/Template.TestedLibrary"))
+			System.IO.Directory.Delete(@"./staging/Template.TestedLibrary", true);
+			
+		Information("Cloning Template.TestedLibrary...");
+
+		var args = new ProcessArgumentBuilder()
+					.Append($"clone https://TristanRhodes:{apiKey}@github.com/TristanRhodes/Template.TestedLibrary.git");
+
+		var cloneSettings = new ProcessSettings
+		{
+			Arguments = args,
+			WorkingDirectory = @"./staging"
+		};
+
+		var cloneResult = StartProcess("git", cloneSettings);
+		if (cloneResult != 0)
+			throw new ApplicationException($"Failed to clone Template.TestedLibrary.");
+			
+		MoveDirectory("staging/Template.TestedLibrary", "templates/Template.TestedLibrary");
+	});
+
+Task("__CloneTestedApiTemplate")
+	.Does(() => {
+			
+		if (!System.IO.Directory.Exists(@"./staging"))
+			System.IO.Directory.CreateDirectory(@"./staging");
+
+		if (System.IO.Directory.Exists(@"./staging/Template.TestedApi"))
+			System.IO.Directory.Delete(@"./staging/Template.TestedApi", true);
+						
+		Information("Cloning Template.TestedApi...");
+
+		var args = new ProcessArgumentBuilder()
+					.Append($"clone https://TristanRhodes:{apiKey}@github.com/TristanRhodes/Template.TestedApi.git");
+
+		var cloneSettings = new ProcessSettings
+		{
+			Arguments = args,
+			WorkingDirectory = @"./staging"
+		};
+
+		var cloneResult = StartProcess("git", cloneSettings);
+		if (cloneResult != 0)
+			throw new ApplicationException($"Failed to clone Template.TestedApi.");
+			
+		MoveDirectory("staging/Template.TestedApi", "templates/Template.TestedApi");
+	});
+	
+
 Task("__InstallTemplate")
 	.Does(() => {
 		Information("Installing Template...");
@@ -71,6 +166,8 @@ Task("__CreateProjectAndTest")
 
 		foreach(var template in templates)
 		{
+			Information("Testing Tempalte: " + template);
+
 			Information("Cleaning folders...");
 			if (System.IO.Directory.Exists(@"./bin/template-proj"))
 				System.IO.Directory.Delete(@"./bin/template-proj", true);
@@ -144,6 +241,9 @@ Task("__VersionInfo")
 	});
 
 Task("InstallAndTestTemplate")
+	.IsDependentOn("__PackageArgsCheck")
+	.IsDependentOn("__CloneTestedLibraryTemplate")
+	.IsDependentOn("__CloneTestedApiTemplate")
 	.IsDependentOn("__InstallTemplate")
 	.IsDependentOn("__CreateProjectAndTest")
 	.IsDependentOn("__UninstallTemplate");
